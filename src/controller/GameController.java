@@ -12,6 +12,8 @@ public class GameController {
     private Ground ground;
     private Camera camera;
 
+    final static int ROWS = 100, COLS = 100;
+
     private ArrayList<Tile> Tiles = new ArrayList<>();
 
     public GameController(Ground ground) {
@@ -25,15 +27,13 @@ public class GameController {
         ground.addMouseMotionListener(camera);
         ground.addMouseListener(camera);
 
-        int cols = 200, rows = 200;
-
         double h = Math.sqrt(3);
 
-        for (int col = 0; col < cols; col++) {
-            double x = 1 + col * 1.5;
+        for (int col = 0; col < COLS; col++) {
+            double x = 1.5 + col * 1.5;
 
-            for (int row = 0; row < rows; row++) {
-                double y = 1 + row * h;
+            for (int row = 0; row < ROWS; row++) {
+                double y = 1.5 + row * h;
 
                 if (col % 2 == 1)
                     y += h / 2.0;

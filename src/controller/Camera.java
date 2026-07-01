@@ -17,7 +17,6 @@ public class Camera implements MouseMotionListener, Runnable, MouseListener{
         right = Math.max(0, (int)(e.getX() - (Ground.getwidth() * 0.9)));
         up = Math.max(0, (int)((Ground.getheight() * 0.1) - e.getY()));
         down = Math.max(0, (int)(e.getY() - (Ground.getheight() * 0.9)));
-        System.out.println(Ground.getwidth() + ", " + e.getX());
     }
 
     @Override
@@ -30,6 +29,13 @@ public class Camera implements MouseMotionListener, Runnable, MouseListener{
         xOffset -= left / 3;
         yOffset -= up / 3;
         yOffset += down / 3;
+        xOffset = Math.max(0, xOffset);
+        yOffset = Math.max(0, yOffset);
+        int a = Math.min(Ground.getheight(), Ground.getwidth()) / 45;
+        double h = a * Math.sqrt(3);
+        xOffset = Math.min((int)(a * ((GameController.COLS * 1.5) + 2)) - Ground.getwidth(), xOffset);
+        yOffset = Math.min((int)(h * GameController.ROWS + 2 * a) - Ground.getheight(), yOffset);
+
     }
 
     public int getXOffset() {
