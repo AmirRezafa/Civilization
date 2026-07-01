@@ -2,6 +2,7 @@ package view;
 
 import controller.Camera;
 import controller.GameController;
+import model.TerrainType;
 import model.Tile;
 
 import javax.swing.*;
@@ -22,17 +23,28 @@ public class Ground extends JPanel{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
 
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         width = getWidth();
         height = getHeight();
 
         g2.translate(-GC.getXOffset(), -GC.getYOffset());
 
-        for(Tile tile: GC.getTiles()){
+        for(Tile tile : GC.getTiles()) {
             int a = Math.min(getWidth(), getHeight()) / 45;
-            Hex.show(tile.getCenterX() * a, tile.getCenterY() * a, a, g2);
+            Hex.show(tile.getCenterX() * a, tile.getCenterY() * a, a, g2, getTerrainColor(tile.getType()));
         }
 
         g2.dispose();
+    }
+
+    private Color getTerrainColor(TerrainType type) {
+        return switch (type) {
+            case PLAIN -> new Color(180, 200, 100);
+            case FOREST -> new Color(34, 139, 34);
+            case MOUNTAIN -> new Color(128, 128, 128);
+            case MEADOW -> new Color(144, 238, 144);
+        };
     }
 
     public static int getwidth() {

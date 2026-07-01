@@ -1,11 +1,13 @@
 package controller;
 
+import model.TerrainType;
 import model.Tile;
 import view.Ground;
 import view.Hex;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameController {
     private GameController instance;
@@ -38,7 +40,11 @@ public class GameController {
                 if (col % 2 == 1)
                     y += h / 2.0;
 
-                Tiles.add(new Tile(x, y));
+                Random random = new Random();
+                TerrainType[] types = TerrainType.values();
+                TerrainType randomType = types[random.nextInt(types.length)];
+
+                Tiles.add(new Tile(x, y, randomType));
             }
         }
     }
