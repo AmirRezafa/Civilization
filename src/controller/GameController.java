@@ -5,9 +5,10 @@ import model.Tile;
 import model.Unit;
 import model.UnitType;
 import view.Ground;
-import view.Hex;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -21,16 +22,27 @@ public class GameController {
     private ArrayList<Tile> Tiles = new ArrayList<>();
     private ArrayList<Unit> units = new ArrayList<>();
 
+    private Unit selectedUnit = null;
+    private Tile tileUnderUnit = null;
+
+    private int food = 100;
+    private int wood = 100;
+    private int stone = 100;
+    private int iron = 50;
+
     public GameController(Ground ground) {
         camera = new Camera();
-        Timer timer = new Timer(
-                8,
-                e -> frameGenerator()
-        );
-        timer.start();
         this.ground = ground;
         ground.addMouseMotionListener(camera);
         ground.addMouseListener(camera);
+        ground.addMouseWheelListener(camera);
+
+        ground.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                handleMouseClick(e);
+            }
+        });
 
         Random random = new Random();
         TerrainType[] types = TerrainType.values();
@@ -67,6 +79,18 @@ public class GameController {
         this.Tiles = tempTiles;
 
         units.add(new Unit(5, 5, UnitType.EXPLORER));
+
+        updateFog();
+
+        Timer timer = new Timer(
+                8,
+                e -> frameGenerator()
+        );
+        timer.start();
+    }
+
+    public int getA() {
+        return camera.getA();
     }
 
     private void updateFog() {
@@ -91,7 +115,7 @@ public class GameController {
 
     private void frameGenerator() {
         camera.run();
-        updateFog();
+//        updateFog();
         ground.repaint();
     }
 
@@ -113,5 +137,102 @@ public class GameController {
 
     public void addUnit(Unit unit){
         units.add(unit);
+    }
+
+    public Unit getSelectedUnit() {
+        return selectedUnit;
+    }
+
+    public Tile getTileUnderUnit() {
+        return tileUnderUnit;
+    }
+
+    private Unit getUnitAt(int col, int row) {
+        for (Unit u : units) {
+            if (u.getCol() == col && u.getRow() == row) return u;
+        }
+        return null;
+    }
+
+    private Tile getTileAtPixel(int pixelX, int pixelY) {
+        int worldX = pixelX + camera.getXOffset();
+        int worldY = pixelY + camera.getYOffset();
+        int a = getA();
+
+        Tile closestTile = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Tile tile : Tiles) {
+            double x = ((tile.getCol() + 1) * 1.5) * a;
+            double y = ((tile.getRow() + 1) * Math.sqrt(3) +
+                    (tile.getCol() % 2 == 0 ? Math.sqrt(3)/2 : 0)) * a;
+
+            double distance = Math.pow(worldX - x, 2) + Math.pow(worldY - y, 2);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestTile = tile;
+            }
+        }
+
+        if (minDistance <= a * a * 1.5) return closestTile;
+        return null;
+    }
+
+    private boolean isNeighbor(int col1, int row1, int col2, int row2) {
+        if (col1 == col2 && Math.abs(row1 - row2) == 1) return true;
+        if (Math.abs(col1 - col2) == 1) {
+            if (col1 % 2 == 0) {
+                return (row2 == row1 || row2 == row1 + 1);
+            } else {
+                return (row2 == row1 || row2 == row1 - 1);
+            }
+        }
+        return false;
+    }
+
+    private void handleMouseClick(MouseEvent e) {
+        Tile clickedTile = getTileAtPixel(e.getX(), e.getY());
+        if (clickedTile == null) return;
+
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            Unit unitOnTile = getUnitAt(clickedTile.getCol(), clickedTile.getRow());
+            if (unitOnTile != null) {
+                selectedUnit = unitOnTile;
+                tileUnderUnit = clickedTile;
+            } else {
+                selectedUnit = null;
+            }
+        } else if (SwingUtilities.isRightMouseButton(e)) {
+            if (selectedUnit != null) {
+                if (isNeighbor(selectedUnit.getCol(), selectedUnit.getRow(), clickedTile.getCol(), clickedTile.getRow())) {
+                    selectedUnit.setPosition(clickedTile.getCol(), clickedTile.getRow());
+                    tileUnderUnit = clickedTile;
+                    updateFog();
+                }
+            }
+        }
+    }
+
+    public int getFood() {
+        return food;
+    }
+
+    public int getWood() {
+        return wood;
+    }
+
+    public int getStone() {
+        return stone;
+    }
+
+    public int getIron() {
+        return iron;
+    }
+
+    public void addResources(int f, int w, int s, int i) {
+        this.food += f;
+        this.wood += w;
+        this.stone += s;
+        this.iron += i;
     }
 }

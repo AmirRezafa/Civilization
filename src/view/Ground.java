@@ -32,13 +32,21 @@ public class Ground extends JPanel{
 
         g2.translate(-GC.getXOffset(), -GC.getYOffset());
 
-        int a = Math.min(getWidth(), getHeight()) / 45;
+        int a = GC.getA();
+
+        int xOffset = GC.getXOffset();
+        int yOffset = GC.getYOffset();
 
         for(Tile tile : GC.getTiles()) {
 
             double x = ((tile.getCol() + 1) * 1.5) * a;
             double y = ((tile.getRow() + 1) * Math.sqrt(3) +
                     (tile.getCol() % 2 == 0 ? Math.sqrt(3)/2 : 0)) * a;
+
+            if (x < xOffset - a * 2 || x > xOffset + width + a * 2 ||
+                    y < yOffset - a * 2 || y > yOffset + height + a * 2){
+                continue;
+            }
 
             Hex.show(x, y, a, g2, getTerrainColor(tile.getType()), tile.isVisible(), tile.isExplored());
         }
@@ -49,7 +57,48 @@ public class Ground extends JPanel{
             double y = ((unit.getRow() + 1) * Math.sqrt(3) +
                     (unit.getCol() % 2 == 0 ? Math.sqrt(3)/2 : 0)) * a;
 
+            if (unit == GC.getSelectedUnit()) {
+                g2.setColor(Color.YELLOW);
+                g2.setStroke(new BasicStroke(3));
+                g2.drawOval((int)x - a/2, (int)y - a/2, a, a);
+                g2.setColor(Color.RED);
+            }
+
             g2.fillOval((int)x - a/4, (int)y - a/4, a/2, a/2);
+        }
+
+        g2.translate(GC.getXOffset(), GC.getYOffset());
+
+        g2.setColor(new Color(25, 25, 25, 200));
+        g2.fillRect(0, 0, width, 45);
+        g2.setColor(new Color(139, 115, 85));
+        g2.fillRect(0, 43, width, 2);
+
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 13));
+        String resourcesText = String.format(" Food: %d    Wood: %d    Stone: %d   ️ Iron: %d",
+                GC.getFood(), GC.getWood(), GC.getStone(), GC.getIron());
+        g2.drawString(resourcesText, 25, 26);
+
+
+        if (GC.getSelectedUnit() != null) {
+            Unit selectedUnit = GC.getSelectedUnit();
+
+            g2.setColor(new Color(20, 20, 20, 220));
+            g2.fillRoundRect(20, height - 140, 260, 100, 15, 15);
+            g2.setColor(Color.YELLOW);
+            g2.setStroke(new BasicStroke(2));
+            g2.drawRoundRect(20, height - 140, 260, 100, 15, 15);
+
+            g2.setColor(Color.YELLOW);
+            g2.setFont(new Font("SansSerif", Font.BOLD, 14));
+            g2.drawString(" UNIT SELECTED", 40, height - 115);
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            g2.drawString("Coordinates: [ X: " + selectedUnit.getCol() + " , Y: " + selectedUnit.getRow() + " ]", 40, height - 90);
+
+            g2.drawString("Terrain Type: " + GC.getTileUnderUnit().getType().toString(), 40, height - 70);
         }
 
         g2.dispose();

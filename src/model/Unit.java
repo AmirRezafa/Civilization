@@ -21,4 +21,9 @@ public class Unit {
     public UnitType getType() {
         return type;
     }
+
+    public void setPosition(int col, int row){
+        this.col = col;
+        this.row = row;
+    }
 }
