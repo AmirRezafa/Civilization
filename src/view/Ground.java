@@ -32,7 +32,12 @@ public class Ground extends JPanel{
 
         for(Tile tile : GC.getTiles()) {
             int a = Math.min(getWidth(), getHeight()) / 45;
-            Hex.show(tile.getCenterX() * a, tile.getCenterY() * a, a, g2, getTerrainColor(tile.getType()));
+
+            double x = ((tile.getCol() + 1) * 1.5) * a;
+            double y = ((tile.getRow() + 1) * Math.sqrt(3) +
+                    (tile.getCol() % 2 == 0 ? Math.sqrt(3)/2 : 0)) * a;
+
+            Hex.show(x, y, a, g2, getTerrainColor(tile.getType()), tile.isVisible(), tile.isExplored());
         }
 
         g2.dispose();

@@ -1,24 +1,40 @@
 package model;
 
 public class Tile {
-    private double centerX, centerY;
+    private int col, row;
     private TerrainType type;
 
-    public Tile(double centerX, double centerY, TerrainType type) {
-        this.centerX = centerX;
-        this.centerY = centerY;
+    private boolean isVisible = false;
+    private boolean Explored = false;
+
+    public Tile(int col, int row, TerrainType type) {
+        this.col = col;
+        this.row = row;
         this.type = type;
+    }
+
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
+        if (visible) this.Explored = true;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public boolean isExplored() {
+        return Explored;
     }
 
     public TerrainType getType() {
         return type;
     }
 
-    public double getCenterX() {
-        return centerX;
+    public int getCol() {
+        return col;
     }
 
-    public double getCenterY() {
-        return centerY;
+    public int getRow() {
+        return row;
     }
 }

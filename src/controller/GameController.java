@@ -2,6 +2,7 @@ package controller;
 
 import model.TerrainType;
 import model.Tile;
+import model.Unit;
 import view.Ground;
 import view.Hex;
 
@@ -17,6 +18,7 @@ public class GameController {
     final static int ROWS = 100, COLS = 100;
 
     private ArrayList<Tile> Tiles = new ArrayList<>();
+    private ArrayList<Unit> units = new ArrayList<>();
 
     public GameController(Ground ground) {
         camera = new Camera();
@@ -29,23 +31,30 @@ public class GameController {
         ground.addMouseMotionListener(camera);
         ground.addMouseListener(camera);
 
-        double h = Math.sqrt(3);
-
         for (int col = 0; col < COLS; col++) {
-            double x = 1.5 + col * 1.5;
-
             for (int row = 0; row < ROWS; row++) {
-                double y = 1.5 + row * h;
-
-                if (col % 2 == 1)
-                    y += h / 2.0;
-
                 Random random = new Random();
                 TerrainType[] types = TerrainType.values();
                 TerrainType randomType = types[random.nextInt(types.length)];
 
-                Tiles.add(new Tile(x, y, randomType));
+                Tiles.add(new Tile(col, row, randomType));
             }
+        }
+        units.add(new Unit(5, 5));
+    }
+
+    private void updateFog() {
+        int visionRadius = 2;
+        for (Tile tile : Tiles) {
+            boolean visible = false;
+            for (Unit unit : units) {
+                if (Math.abs(tile.getCol() - unit.getCol()) <= visionRadius &&
+                        Math.abs(tile.getRow() - unit.getRow()) <= visionRadius) {
+                    visible = true;
+                    break;
+                }
+            }
+            tile.setVisible(visible);
         }
     }
 
@@ -55,6 +64,7 @@ public class GameController {
 
     private void frameGenerator() {
         camera.run();
+        updateFog();
         ground.repaint();
     }
 
