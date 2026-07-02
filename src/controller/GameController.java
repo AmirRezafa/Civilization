@@ -3,6 +3,7 @@ package controller;
 import model.TerrainType;
 import model.Tile;
 import model.Unit;
+import model.UnitType;
 import view.Ground;
 import view.Hex;
 
@@ -31,22 +32,48 @@ public class GameController {
         ground.addMouseMotionListener(camera);
         ground.addMouseListener(camera);
 
+        Random random = new Random();
+        TerrainType[] types = TerrainType.values();
+
+        int seedsCount = 100;
+        int[][] seeds = new int[seedsCount][2];
+        TerrainType[] seedTypes = new TerrainType[seedsCount];
+
+        for (int i = 0; i < seedsCount; i++) {
+            seeds[i][0] = random.nextInt(COLS);
+            seeds[i][1] = random.nextInt(ROWS);
+            seedTypes[i] = types[random.nextInt(types.length)];
+        }
+
+        ArrayList<Tile> tempTiles = new ArrayList<>();
+
         for (int col = 0; col < COLS; col++) {
             for (int row = 0; row < ROWS; row++) {
-                Random random = new Random();
-                TerrainType[] types = TerrainType.values();
-                TerrainType randomType = types[random.nextInt(types.length)];
+                double minD = Double.MAX_VALUE;
+                TerrainType finalType = types[0];
 
-                Tiles.add(new Tile(col, row, randomType));
+                for (int i = 0; i < seedsCount; i++) {
+                    double dist = Math.pow(seeds[i][0] - col, 2) + Math.pow(seeds[i][1] - row, 2);
+                    dist += random.nextDouble() * 8.0;
+
+                    if (dist < minD) {
+                        minD = dist;
+                        finalType = seedTypes[i];
+                    }
+                }
+                tempTiles.add(new Tile(col, row, finalType));
             }
         }
-        units.add(new Unit(5, 5));
+        this.Tiles = tempTiles;
+
+        units.add(new Unit(5, 5, UnitType.EXPLORER));
     }
 
     private void updateFog() {
         int visionRadius = 2;
         for (Tile tile : Tiles) {
             boolean visible = false;
+//DEBUG:            visible = true;
             for (Unit unit : units) {
                 if (Math.abs(tile.getCol() - unit.getCol()) <= visionRadius &&
                         Math.abs(tile.getRow() - unit.getRow()) <= visionRadius) {
@@ -78,5 +105,13 @@ public class GameController {
 
     public ArrayList<Tile> getTiles() {
         return Tiles;
+    }
+
+    public ArrayList<Unit> getUnits() {
+        return units;
+    }
+
+    public void addUnit(Unit unit){
+        units.add(unit);
     }
 }

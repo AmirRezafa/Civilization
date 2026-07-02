@@ -2,12 +2,12 @@ package view;
 
 import java.awt.*;
 
-public class Hex {
-    private static final Color FOG_COLOR = new Color(30, 30, 30, 200);
-    private static final Color UNEXPLORED_COLOR = Color.BLACK;
+import static view.Utils.brighten;
+import static view.Utils.darken;
 
+public class Hex {
     static void show(double centerX, double centerY, int radius, Graphics2D g2, Color terrainColor, boolean isVisible, boolean wasExplored) {
-        double drawRadius = radius * 0.90;
+        double drawRadius = radius * 0.92;
 
         int[] x = new int[6];
         int[] y = new int[6];
@@ -18,21 +18,40 @@ public class Hex {
             y[i] = (int)(centerY + (drawRadius * Math.sin(angle)));
         }
 
+        Polygon hex = new Polygon(x, y, 6);
+
         Color finalColor;
         if (!wasExplored) {
-            finalColor = UNEXPLORED_COLOR;
+            finalColor = Color.BLACK;
         } else if (!isVisible) {
-            finalColor = FOG_COLOR;
+            finalColor = darken(terrainColor, 0.5f);
         } else {
             finalColor = terrainColor;
         }
 
-        g2.setColor(finalColor);
-        g2.fillPolygon(x, y, 6);
+        if (wasExplored && isVisible) {
+            Color lighter = brighten(finalColor, 0.3f);
+
+            RadialGradientPaint rgp = new RadialGradientPaint(
+                    new Point((int)centerX, (int)centerY),
+                    (float)drawRadius,
+                    new float[]{0.0f, 1.0f},
+                    new Color[]{lighter, finalColor}
+            );
+            g2.setPaint(rgp);
+        } else {
+            g2.setColor(finalColor);
+        }
+
+        g2.fillPolygon(hex);
 
         if (wasExplored) {
-            g2.setColor(Color.BLACK);
-            g2.drawPolygon(x, y, 6);
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.setColor(new Color(0, 0, 0, 120));
+            g2.drawPolygon(hex);
         }
+
+        g2.setStroke(new BasicStroke(1.0f));
     }
+
 }
