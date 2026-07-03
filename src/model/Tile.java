@@ -7,7 +7,7 @@ public class Tile {
 
     private TerrainType terrain;
     private Map<ResourceType, Integer> resources;
-    private BuildingType building;
+    private Building building;
 
     private int resourceCapacity;
     private int stationedWorkersCount;
@@ -21,6 +21,17 @@ public class Tile {
         this.row = row;
         this.terrain = terrain;
         this.resources = resources;
+    }
+
+    public boolean hasResource(ResourceType type) {
+        return (resources != null && resources.containsKey(type) && resources.get(type) > 0);
+    }
+
+    public int extractResource(ResourceType type, int amount) {
+        int currentAmount = resources.get(type);
+        int newAmount = Math.max(0, currentAmount - amount);
+        resources.put(type, newAmount);
+        return currentAmount - newAmount;
     }
 
     public void setVisible(boolean visible) {
@@ -46,5 +57,17 @@ public class Tile {
 
     public TerrainType getTerrain() {
         return terrain;
+    }
+
+    public Building getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
+
+    public Map<ResourceType, Integer> getResources() {
+        return resources;
     }
 }
