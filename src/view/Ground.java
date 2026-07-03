@@ -1,10 +1,11 @@
 package view;
 
-import controller.Camera;
 import controller.GameController;
 import model.TerrainType;
 import model.Tile;
 import model.Unit;
+import view.components.Hex;
+import view.components.UnitView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,18 +54,7 @@ public class Ground extends JPanel{
 
         g2.setColor(Color.RED);
         for (Unit unit : GC.getUnits()) {
-            double x = ((unit.getCol() + 1) * 1.5) * a;
-            double y = ((unit.getRow() + 1) * Math.sqrt(3) +
-                    (unit.getCol() % 2 == 0 ? Math.sqrt(3)/2 : 0)) * a;
-
-            if (unit == GC.getSelectedUnit()) {
-                g2.setColor(Color.YELLOW);
-                g2.setStroke(new BasicStroke(3));
-                g2.drawOval((int)x - a/2, (int)y - a/2, a, a);
-                g2.setColor(Color.RED);
-            }
-
-            g2.fillOval((int)x - a/4, (int)y - a/4, a/2, a/2);
+            UnitView.show(unit, a, unit == GC.getSelectedUnit(), g2);
         }
 
         g2.translate(GC.getXOffset(), GC.getYOffset());

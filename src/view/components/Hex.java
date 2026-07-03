@@ -1,4 +1,4 @@
-package view;
+package view.components;
 
 import java.awt.*;
 
@@ -6,7 +6,7 @@ import static view.Utils.brighten;
 import static view.Utils.darken;
 
 public class Hex {
-    static void show(double centerX, double centerY, int radius, Graphics2D g2, Color terrainColor, boolean isVisible, boolean wasExplored) {
+    public static void show(double centerX, double centerY, int radius, Graphics2D g2, Color terrainColor, boolean isVisible, boolean wasExplored) {
         double drawRadius = radius * 0.92;
 
         int[] x = new int[6];

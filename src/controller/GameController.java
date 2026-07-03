@@ -13,6 +13,7 @@ import java.util.Random;
 
 public class GameController {
     private GameController instance;
+    private AnimationController animationController;
     private Ground ground;
     private Camera camera;
 
@@ -28,6 +29,33 @@ public class GameController {
     private int wood = 100;
     private int stone = 100;
     private int iron = 50;
+
+    public GameController(Ground ground) {
+        camera = new Camera();
+        this.ground = ground;
+        ground.addMouseMotionListener(camera);
+        ground.addMouseListener(camera);
+        ground.addMouseWheelListener(camera);
+
+        ground.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                handleMouseClick(e);
+            }
+        });
+
+        Generator();
+
+        updateFog();
+
+        animationController = new AnimationController(this);
+
+        Timer timer = new Timer(
+                8,
+                e -> frameGenerator()
+        );
+        timer.start();
+    }
 
     public void Generator(){
         Random random = new Random();
@@ -89,33 +117,8 @@ public class GameController {
         }
         this.Tiles = tempTiles;
 
-        units.add(new Unit(5, 5, UnitType.EXPLORER));
+        units.add(new Unit(UnitType.EXPLORER, 5, 5));
 
-    }
-
-    public GameController(Ground ground) {
-        camera = new Camera();
-        this.ground = ground;
-        ground.addMouseMotionListener(camera);
-        ground.addMouseListener(camera);
-        ground.addMouseWheelListener(camera);
-
-        ground.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                handleMouseClick(e);
-            }
-        });
-
-        Generator();
-
-        updateFog();
-
-        Timer timer = new Timer(
-                8,
-                e -> frameGenerator()
-        );
-        timer.start();
     }
 
     public int getA() {
@@ -143,6 +146,7 @@ public class GameController {
     }
 
     private void frameGenerator() {
+        animationController.run();
         camera.run();
 //        updateFog();
         ground.repaint();
@@ -234,7 +238,7 @@ public class GameController {
         } else if (SwingUtilities.isRightMouseButton(e)) {
             if (selectedUnit != null) {
                 if (isNeighbor(selectedUnit.getCol(), selectedUnit.getRow(), clickedTile.getCol(), clickedTile.getRow())) {
-                    selectedUnit.setPosition(clickedTile.getCol(), clickedTile.getRow());
+                    selectedUnit.move(clickedTile.getCol(), clickedTile.getRow(), clickedTile.getTerrain().getMovementCost());
                     tileUnderUnit = clickedTile;
                     updateFog();
                 }

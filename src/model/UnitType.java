@@ -1,23 +1,42 @@
 package model;
 
 public enum UnitType {
-    EXPLORER(1, 2),
-    BUILDER(2, 1),
-    WORKER(1, 1);
+    EXPLORER("Explorer", 4, 3, 0, 1),
+    BUILDER("Builder", 2, 1, 3, 1),
+    WORKER("Worker", 2, 1, 0, 1),
+    BORDER_EXPANDER("Border Expander", 2, 1, 1, 1);
 
-    private final int cost;
-    private final int movementPoints;
+    private final String displayName;
+    private final int maxAP;
+    private final int visionRadius;
+    private final int baseCharges;
+    private final int foodConsumption;
 
-    UnitType(int cost, int movementPoints) {
-        this.cost = cost;
-        this.movementPoints = movementPoints;
+    UnitType(String displayName, int maxAP, int visionRadius, int baseCharges, int foodConsumption) {
+        this.displayName = displayName;
+        this.maxAP = maxAP;
+        this.visionRadius = visionRadius;
+        this.baseCharges = baseCharges;
+        this.foodConsumption = foodConsumption;
     }
 
-    public int getCost() {
-        return cost;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public int getMovementPoints() {
-        return movementPoints;
+    public int getMaxAP() {
+        return maxAP;
+    }
+
+    public int getVisionRadius() {
+        return visionRadius;
+    }
+
+    public int getBaseCharges() {
+        return baseCharges;
+    }
+
+    public int getFoodConsumption() {
+        return foodConsumption;
     }
 }

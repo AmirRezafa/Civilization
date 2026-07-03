@@ -4,7 +4,7 @@ import view.Ground;
 
 import java.awt.event.*;
 
-public class Camera implements MouseMotionListener, Runnable, MouseListener, MouseWheelListener {
+public class Camera implements MouseMotionListener, MouseListener, MouseWheelListener {
     private int xOffset = 0, yOffset = 0;
     private double xVelocity = 0, yVelocity = 0;
 
@@ -25,7 +25,6 @@ public class Camera implements MouseMotionListener, Runnable, MouseListener, Mou
     public void mouseDragged(MouseEvent e) {
     }
 
-    @Override
     public void run() {
         double targetXVelocity = (right / 3.0) - (left / 3.0);
         double targetYVelocity = (down / 3.0) - (up / 3.0);
