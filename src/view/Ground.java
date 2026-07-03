@@ -48,7 +48,7 @@ public class Ground extends JPanel{
                 continue;
             }
 
-            Hex.show(x, y, a, g2, getTerrainColor(tile.getType()), tile.isVisible(), tile.isExplored());
+            Hex.show(x, y, a, g2, getTerrainColor(tile.getTerrain()), tile.isVisible(), tile.isExplored());
         }
 
         g2.setColor(Color.RED);
@@ -98,7 +98,7 @@ public class Ground extends JPanel{
             g2.setFont(new Font("SansSerif", Font.PLAIN, 12));
             g2.drawString("Coordinates: [ X: " + selectedUnit.getCol() + " , Y: " + selectedUnit.getRow() + " ]", 40, height - 90);
 
-            g2.drawString("Terrain Type: " + GC.getTileUnderUnit().getType().toString(), 40, height - 70);
+            g2.drawString("Terrain Type: " + GC.getTileUnderUnit().getTerrain().toString(), 40, height - 70);
         }
 
         g2.dispose();

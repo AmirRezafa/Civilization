@@ -1,15 +1,14 @@
 package controller;
 
-import model.TerrainType;
-import model.Tile;
-import model.Unit;
-import model.UnitType;
+import model.*;
 import view.Ground;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class GameController {
@@ -30,20 +29,7 @@ public class GameController {
     private int stone = 100;
     private int iron = 50;
 
-    public GameController(Ground ground) {
-        camera = new Camera();
-        this.ground = ground;
-        ground.addMouseMotionListener(camera);
-        ground.addMouseListener(camera);
-        ground.addMouseWheelListener(camera);
-
-        ground.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                handleMouseClick(e);
-            }
-        });
-
+    public void Generator(){
         Random random = new Random();
         TerrainType[] types = TerrainType.values();
 
@@ -73,12 +59,55 @@ public class GameController {
                         finalType = seedTypes[i];
                     }
                 }
-                tempTiles.add(new Tile(col, row, finalType));
+
+                Map<ResourceType, Integer> tileResources = new HashMap<>();
+
+                switch (finalType) {
+                    case FOREST:
+                        tileResources.put(ResourceType.WOOD, 500);
+                        break;
+
+                    case MOUNTAIN:
+                        tileResources.put(ResourceType.STONE, 500);
+
+                        if (random.nextDouble() < 0.20)
+                            tileResources.put(ResourceType.IRON, 150);
+                        break;
+
+                    case PLAIN:
+                        if (random.nextDouble() < 0.20)
+                            tileResources.put(ResourceType.CATTLE, 300);
+                        break;
+
+                    case MEADOW:
+                        if (random.nextDouble() < 0.30)
+                            tileResources.put(ResourceType.WHEAT, 300);
+                        break;
+                }
+                tempTiles.add(new Tile(col, row, finalType, tileResources));
             }
         }
         this.Tiles = tempTiles;
 
         units.add(new Unit(5, 5, UnitType.EXPLORER));
+
+    }
+
+    public GameController(Ground ground) {
+        camera = new Camera();
+        this.ground = ground;
+        ground.addMouseMotionListener(camera);
+        ground.addMouseListener(camera);
+        ground.addMouseWheelListener(camera);
+
+        ground.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                handleMouseClick(e);
+            }
+        });
+
+        Generator();
 
         updateFog();
 

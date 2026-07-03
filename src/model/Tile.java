@@ -1,16 +1,26 @@
 package model;
 
+import java.util.Map;
+
 public class Tile {
     private int col, row;
-    private TerrainType type;
+
+    private TerrainType terrain;
+    private Map<ResourceType, Integer> resources;
+    private BuildingType building;
+
+    private int resourceCapacity;
+    private int stationedWorkersCount;
+    private boolean isWithinBorders;
 
     private boolean isVisible = false;
     private boolean Explored = false;
 
-    public Tile(int col, int row, TerrainType type) {
+    public Tile(int col, int row, TerrainType terrain, Map<ResourceType, Integer> resources) {
         this.col = col;
         this.row = row;
-        this.type = type;
+        this.terrain = terrain;
+        this.resources = resources;
     }
 
     public void setVisible(boolean visible) {
@@ -26,15 +36,15 @@ public class Tile {
         return Explored;
     }
 
-    public TerrainType getType() {
-        return type;
-    }
-
     public int getCol() {
         return col;
     }
 
     public int getRow() {
         return row;
+    }
+
+    public TerrainType getTerrain() {
+        return terrain;
     }
 }
