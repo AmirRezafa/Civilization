@@ -2,6 +2,7 @@ package controller;
 
 import model.*;
 import view.Ground;
+import view.UnitActionPanel;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class GameController {
-    private GameController instance;
+    private static GameController instance;
     private AnimationController animationController;
     private Ground ground;
     private Camera camera;
@@ -21,6 +22,9 @@ public class GameController {
 
     private ArrayList<Tile> Tiles = new ArrayList<>();
     private ArrayList<Unit> units = new ArrayList<>();
+    private ArrayList<Building> buildings = new ArrayList<>();
+
+    private final GlobalResourceManager economy;
 
     private Unit selectedUnit = null;
     private Tile tileUnderUnit = null;
@@ -30,7 +34,10 @@ public class GameController {
     private int stone = 100;
     private int iron = 50;
 
+    private int currentTurn = 1;
+
     public GameController(Ground ground) {
+        instance = this;
         camera = new Camera();
         this.ground = ground;
         ground.addMouseMotionListener(camera);
@@ -49,6 +56,7 @@ public class GameController {
         updateFog();
 
         animationController = new AnimationController(this);
+        economy = new GlobalResourceManager();
 
         Timer timer = new Timer(
                 8,
@@ -121,6 +129,28 @@ public class GameController {
 
     }
 
+    public void advanceTurn(){
+        currentTurn++;
+        for(Tile tile: Tiles){
+            Building building = tile.getBuilding();
+            if(building != null){
+                building.processTurnProduction(tile, this.economy);
+            }
+        }
+
+        for(Unit unit: units){
+            int foodRequirement = unit.getType().getFoodConsumption();
+
+            boolean hasFed = economy.spendResource(ResourceType.WHEAT, foodRequirement);
+            if(!hasFed) hasFed = economy.spendResource(ResourceType.CATTLE, foodRequirement);
+
+            if(!hasFed) System.out.println("Need Food!!");
+
+            unit.resetActionPoints();
+
+        }
+    }
+
     public int getA() {
         return camera.getA();
     }
@@ -141,7 +171,7 @@ public class GameController {
         }
     }
 
-    public GameController getInstance() {
+    public static GameController getInstance() {
         return instance;
     }
 
@@ -232,6 +262,7 @@ public class GameController {
             if (unitOnTile != null) {
                 selectedUnit = unitOnTile;
                 tileUnderUnit = clickedTile;
+                UnitActionPanel.getInstance().updateActions();
             } else {
                 selectedUnit = null;
             }
@@ -267,5 +298,17 @@ public class GameController {
         this.wood += w;
         this.stone += s;
         this.iron += i;
+    }
+
+    public GlobalResourceManager getEconomy() {
+        return economy;
+    }
+
+    public int getCurrentTurn() {
+        return currentTurn;
+    }
+
+    public boolean constructBuilding(Unit selectedUnit, BuildingType bType) {
+        return true;
     }
 }

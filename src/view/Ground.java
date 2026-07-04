@@ -59,18 +59,6 @@ public class Ground extends JPanel{
 
         g2.translate(GC.getXOffset(), GC.getYOffset());
 
-        g2.setColor(new Color(25, 25, 25, 200));
-        g2.fillRect(0, 0, width, 45);
-        g2.setColor(new Color(139, 115, 85));
-        g2.fillRect(0, 43, width, 2);
-
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("SansSerif", Font.BOLD, 13));
-        String resourcesText = String.format(" Food: %d    Wood: %d    Stone: %d   ️ Iron: %d",
-                GC.getFood(), GC.getWood(), GC.getStone(), GC.getIron());
-        g2.drawString(resourcesText, 25, 26);
-
-
         if (GC.getSelectedUnit() != null) {
             Unit selectedUnit = GC.getSelectedUnit();
 

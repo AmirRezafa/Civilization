@@ -89,4 +89,8 @@ public class Unit {
         x = targetX;
         y = targetY;
     }
+
+    public void resetActionPoints(){
+        currentAP = type.getMaxAP();
+    }
 }
