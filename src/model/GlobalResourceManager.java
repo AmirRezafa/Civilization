@@ -37,6 +37,11 @@ public class GlobalResourceManager {
         return false;
     }
 
+    public boolean hasEnough(ResourceType type, int amount){
+        int current = resources.getOrDefault(type, 0);
+        return (amount <= current);
+    }
+
     public int getResourceAmount(ResourceType type) {
         return resources.getOrDefault(type, 0);
     }

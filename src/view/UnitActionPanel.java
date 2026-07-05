@@ -61,13 +61,8 @@ public class UnitActionPanel extends JPanel {
             buildBtn.setEnabled(isValidTerrain && isTileEmpty);
 
             buildBtn.addActionListener(e -> {
-                boolean success = GC.constructBuilding(selectedUnit, bType);
-
-                if (success) {
-                    System.out.println("Successfully constructed: " + bType.getDisplayName());
-
-                    updateActions();
-                }
+                GC.constructBuilding(bType);
+                updateActions();
             });
 
             buttonContainer.add(buildBtn);

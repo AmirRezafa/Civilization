@@ -37,7 +37,6 @@ public class Unit {
                     (col % 2 == 0 ? Math.sqrt(3)/2 : 0));
 
             this.isMoving = true;
-            UnitActionPanel.getInstance().updateActions();
 
             return true;
         }
@@ -58,6 +57,10 @@ public class Unit {
 
     public int getCurrentAP() {
         return currentAP;
+    }
+
+    public void setCurrentAP(int currentAP) {
+        this.currentAP = currentAP;
     }
 
     public boolean isMoving() {

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class GameController {
+    private final static int BUILD_COST = 2;
     private static GameController instance;
     private AnimationController animationController;
     private Ground ground;
@@ -35,6 +36,8 @@ public class GameController {
     private int iron = 50;
 
     private int currentTurn = 1;
+
+    private Tile Townhall;
 
     public GameController(Ground ground) {
         instance = this;
@@ -120,13 +123,19 @@ public class GameController {
                             tileResources.put(ResourceType.WHEAT, 300);
                         break;
                 }
-                tempTiles.add(new Tile(col, row, finalType, tileResources));
+                Tile tile = new Tile(col, row, finalType, tileResources);
+                tempTiles.add(tile);
+                if(row == 10 && col == 10) Townhall = tile;
             }
         }
         this.Tiles = tempTiles;
 
-        units.add(new Unit(UnitType.EXPLORER, 5, 5));
-        units.add(new Unit(UnitType.BUILDER, 6, 6));
+        Townhall.setBuilding(new Building(BuildingType.TOWN_HALL, 10, 10));
+        units.add(new Unit(UnitType.BUILDER, 10, 11));
+        units.add(new Unit(UnitType.BUILDER, 11, 10));
+        units.add(new Unit(UnitType.WORKER, 9, 11));
+        units.add(new Unit(UnitType.WORKER, 10, 9));
+        units.add(new Unit(UnitType.EXPLORER, 11, 11));
 
     }
 
@@ -270,9 +279,12 @@ public class GameController {
         } else if (SwingUtilities.isRightMouseButton(e)) {
             if (selectedUnit != null) {
                 if (isNeighbor(selectedUnit.getCol(), selectedUnit.getRow(), clickedTile.getCol(), clickedTile.getRow())) {
-                    selectedUnit.move(clickedTile.getCol(), clickedTile.getRow(), clickedTile.getTerrain().getMovementCost());
-                    tileUnderUnit = clickedTile;
-                    updateFog();
+                    if(selectedUnit.move(clickedTile.getCol(), clickedTile.getRow(),
+                            clickedTile.getTerrain().getMovementCost())){
+                        tileUnderUnit = clickedTile;
+                        updateFog();
+                        UnitActionPanel.getInstance().updateActions();
+                    }
                 }
             }
         }
@@ -309,7 +321,21 @@ public class GameController {
         return currentTurn;
     }
 
-    public boolean constructBuilding(Unit selectedUnit, BuildingType bType) {
+    public boolean constructBuilding(BuildingType bType) {
+        if(selectedUnit.getCurrentAP() < BUILD_COST) return false;
+        selectedUnit.setCurrentAP(selectedUnit.getCurrentAP() - BUILD_COST);
+        if(!(economy.hasEnough(ResourceType.WOOD, bType.getWoodCost()) &&
+            economy.hasEnough(ResourceType.STONE, bType.getStoneCost()) &&
+            economy.hasEnough(ResourceType.IRON, bType.getIronCost())))
+            return false;
+
+        economy.spendResource(ResourceType.WOOD, bType.getWoodCost());
+        economy.spendResource(ResourceType.STONE, bType.getStoneCost());
+        economy.spendResource(ResourceType.IRON, bType.getIronCost());
+
+        Building building = new Building(bType, tileUnderUnit.getCol(), tileUnderUnit.getRow());
+        buildings.add(building);
+        tileUnderUnit.setBuilding(building);
         return true;
     }
 }
