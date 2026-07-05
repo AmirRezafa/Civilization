@@ -4,7 +4,7 @@ import controller.GameController;
 import model.BuildingType;
 import model.Tile;
 import model.Unit;
-// import model.UnitType; // If you have a UnitType enum
+import model.UnitType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,15 +16,11 @@ public class UnitActionPanel extends JPanel {
 
     public UnitActionPanel() {
         this.GC = GameController.getInstance();
+        setVisible(false);
 
         this.setLayout(new BorderLayout());
         this.setBackground(new Color(40, 40, 40));
         this.setPreferredSize(new Dimension(0, 80));
-
-        JLabel title = new JLabel("  Unit Actions: ");
-        title.setForeground(new Color(241, 196, 15)); // Golden text
-        title.setFont(new Font("SansSerif", Font.BOLD, 15));
-        this.add(title, BorderLayout.WEST);
 
         buttonContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 25));
         buttonContainer.setOpaque(false);
@@ -41,6 +37,12 @@ public class UnitActionPanel extends JPanel {
             refreshUI();
             return;
         }
+
+        if (selectedUnit.getType() != UnitType.BUILDER){
+            this.setVisible(false);
+            return;
+        }
+        this.setVisible(true);
 
         Tile currentTile = GC.getTileUnderUnit();
 

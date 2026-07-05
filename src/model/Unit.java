@@ -1,5 +1,7 @@
 package model;
 
+import view.UnitActionPanel;
+
 public class Unit {
     private UnitType type;
     private int col;
@@ -35,6 +37,8 @@ public class Unit {
                     (col % 2 == 0 ? Math.sqrt(3)/2 : 0));
 
             this.isMoving = true;
+            UnitActionPanel.getInstance().updateActions();
+
             return true;
         }
         return false;

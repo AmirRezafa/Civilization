@@ -126,6 +126,7 @@ public class GameController {
         this.Tiles = tempTiles;
 
         units.add(new Unit(UnitType.EXPLORER, 5, 5));
+        units.add(new Unit(UnitType.BUILDER, 6, 6));
 
     }
 
@@ -262,10 +263,10 @@ public class GameController {
             if (unitOnTile != null) {
                 selectedUnit = unitOnTile;
                 tileUnderUnit = clickedTile;
-                UnitActionPanel.getInstance().updateActions();
             } else {
                 selectedUnit = null;
             }
+            UnitActionPanel.getInstance().updateActions();
         } else if (SwingUtilities.isRightMouseButton(e)) {
             if (selectedUnit != null) {
                 if (isNeighbor(selectedUnit.getCol(), selectedUnit.getRow(), clickedTile.getCol(), clickedTile.getRow())) {
