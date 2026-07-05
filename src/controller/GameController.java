@@ -5,12 +5,10 @@ import view.Ground;
 import view.UnitActionPanel;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class GameController {
     private final static int BUILD_COST = 2;
@@ -38,6 +36,8 @@ public class GameController {
     private int currentTurn = 1;
 
     private Tile Townhall;
+
+    private int TownhallX = 10, TownhallY = 10;
 
     public GameController(Ground ground) {
         instance = this;
@@ -72,14 +72,35 @@ public class GameController {
         Random random = new Random();
         TerrainType[] types = TerrainType.values();
 
-        int seedsCount = 100;
-        int[][] seeds = new int[seedsCount][2];
-        TerrainType[] seedTypes = new TerrainType[seedsCount];
+        int seedsCount = 150;
+        int[][] seeds = new int[seedsCount + types.length + 1][2];
+        TerrainType[] seedTypes = new TerrainType[seedsCount + types.length + 1];
 
         for (int i = 0; i < seedsCount; i++) {
-            seeds[i][0] = random.nextInt(COLS);
-            seeds[i][1] = random.nextInt(ROWS);
+            int c = random.nextInt(COLS);
+            int r = random.nextInt(ROWS);
+            while(Math.pow(c - TownhallX, 2) + Math.pow(r - TownhallY, 2) < 16){
+                c = random.nextInt(COLS);
+                r = random.nextInt(ROWS);
+            }
+            seeds[i][0] = c;
+            seeds[i][1] = r;
             seedTypes[i] = types[random.nextInt(types.length)];
+        }
+
+        ArrayList<int[]> positions = new ArrayList<>(List.of(
+                new int[]{TownhallX + 5, TownhallY},
+                new int[]{TownhallX - 5, TownhallY},
+                new int[]{TownhallX, TownhallY + 5},
+                new int[]{TownhallX, TownhallY - 5},
+                new int[]{TownhallX + 4, TownhallY + 4}
+        ));
+
+        Collections.shuffle(positions, random);
+
+        for(int i = 0; i < types.length + 1; i++){
+            seeds[i + seedsCount] = positions.get(i);
+            seedTypes[i + seedsCount] = types[((i + 1) % types.length)];
         }
 
         ArrayList<Tile> tempTiles = new ArrayList<>();
@@ -89,7 +110,7 @@ public class GameController {
                 double minD = Double.MAX_VALUE;
                 TerrainType finalType = types[0];
 
-                for (int i = 0; i < seedsCount; i++) {
+                for (int i = 0; i < seedsCount + types.length + 1; i++) {
                     double dist = Math.pow(seeds[i][0] - col, 2) + Math.pow(seeds[i][1] - row, 2);
                     dist += random.nextDouble() * 8.0;
 
@@ -125,17 +146,17 @@ public class GameController {
                 }
                 Tile tile = new Tile(col, row, finalType, tileResources);
                 tempTiles.add(tile);
-                if(row == 10 && col == 10) Townhall = tile;
+                if(col == TownhallX && row == TownhallY) Townhall = tile;
             }
         }
         this.Tiles = tempTiles;
 
-        Townhall.setBuilding(new Building(BuildingType.TOWN_HALL, 10, 10));
-        units.add(new Unit(UnitType.BUILDER, 10, 11));
-        units.add(new Unit(UnitType.BUILDER, 11, 10));
-        units.add(new Unit(UnitType.WORKER, 9, 11));
-        units.add(new Unit(UnitType.WORKER, 10, 9));
-        units.add(new Unit(UnitType.EXPLORER, 11, 11));
+        Townhall.setBuilding(new Building(BuildingType.TOWN_HALL, TownhallX, TownhallY));
+        units.add(new Unit(UnitType.BUILDER, TownhallX, TownhallY + 1));
+        units.add(new Unit(UnitType.BUILDER, TownhallX + 1, TownhallY));
+        units.add(new Unit(UnitType.WORKER, TownhallX - 1, TownhallY + 1));
+        units.add(new Unit(UnitType.WORKER, TownhallX, TownhallY - 1));
+        units.add(new Unit(UnitType.EXPLORER, TownhallX + 1, TownhallY + 1));
 
     }
 
