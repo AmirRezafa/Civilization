@@ -23,23 +23,58 @@ public class UnitActionPanel extends JPanel {
         buttonContainer.setOpaque(false);
         this.add(buttonContainer, BorderLayout.CENTER);
         instance = this;
+        setOpaque(false);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
+
+        g2.setColor(new Color(40, 40, 40));
+        g2.fillRect(0, 0, getWidth(), getHeight());
+
+        g2.dispose();
+
+        super.paintComponent(g);
     }
 
     public void updateActions() {
         buttonContainer.removeAll();
 
         Unit selectedUnit = GC.getSelectedUnit();
+        Tile currentTile = GC.getTileUnderUnit();
 
         setVisible(false);
         if (selectedUnit == null) {
+            if(currentTile == null) return;
+            Building building = currentTile.getBuilding();
+            if(building == null) return;
+            int workerCount = building.getStationedWorkers().size();
+
+            if(workerCount == 0) return;
+
+            JButton unassignBtn = new JButton("Unassign Worker (" + workerCount + ")");
+            unassignBtn.setFocusable(false);
+            unassignBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+            unassignBtn.setBackground(new Color(231, 76, 60));
+            unassignBtn.setForeground(Color.WHITE);
+
+            unassignBtn.addActionListener(e -> {
+                GC.removeWorker();
+                updateActions();
+            });
+
+            buttonContainer.add(unassignBtn);
+            setVisible(true);
+            System.out.println(4);
+
             refreshUI();
             return;
         }
 
         if (selectedUnit.getType() == UnitType.BUILDER) {
-
-            Tile currentTile = GC.getTileUnderUnit();
-
             for (BuildingType bType : BuildingType.values()) {
                 if (bType == BuildingType.TOWN_HALL || bType == BuildingType.SETTLEMENT) {
                     continue;

@@ -4,10 +4,7 @@ import controller.GameController;
 import model.TerrainType;
 import model.Tile;
 import model.Unit;
-import view.components.BuildingView;
-import view.components.Hex;
-import view.components.ResourceView;
-import view.components.UnitView;
+import view.components.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,6 +50,7 @@ public class Ground extends JPanel{
 
             Hex.show(x, y, a, g2, getTerrainColor(tile.getTerrain()), tile.isVisible(), tile.isExplored());
             ResourceView.show(tile, a, x, y, g2);
+            StationedWorkerView.show(tile, a, x, y, g2);
             if(tile.getBuilding() != null && tile.isVisible()){
                 BuildingView.show(tile.getBuilding(), x, y, a, g2);
             }

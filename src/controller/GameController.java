@@ -290,6 +290,7 @@ public class GameController {
                 tileUnderUnit = clickedTile;
             } else {
                 selectedUnit = null;
+                tileUnderUnit = clickedTile;
             }
             UnitActionPanel.getInstance().updateActions();
         } else if (SwingUtilities.isRightMouseButton(e)) {
@@ -338,5 +339,12 @@ public class GameController {
         units.remove(selectedUnit);
         selectedUnit = null;
         tileUnderUnit = null;
+    }
+
+    public void removeWorker() {
+        Building building = tileUnderUnit.getBuilding();
+        Unit worker = building.getLastWorker();
+        building.removeWorker(worker);
+        units.add(worker);
     }
 }

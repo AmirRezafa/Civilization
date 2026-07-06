@@ -67,4 +67,12 @@ public class Building {
     public boolean needWorker() {
         return workers.size() < type.getMaxWorkerCapacity();
     }
+
+    public ArrayList<Unit> getStationedWorkers() {
+        return workers;
+    }
+
+    public Unit getLastWorker() {
+        return workers.get(workers.size() - 1);
+    }
 }

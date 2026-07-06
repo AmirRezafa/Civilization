@@ -5,7 +5,6 @@ import model.ResourceType;
 import java.awt.*;
 
 public class ResourceView {
-
     public static void show(Tile tile, int a, double x, double y, Graphics2D g2) {
         if (!tile.isExplored() || tile.getResources() == null) {
             return;
@@ -38,7 +37,6 @@ public class ResourceView {
 
         if (tile.hasResource(ResourceType.CATTLE)) {
             drawCattle(g2, iconX + offset, iconY, size);
-            offset += (int) (size * 1.2);
         }
     }
 
