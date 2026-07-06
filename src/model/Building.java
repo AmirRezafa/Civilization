@@ -1,17 +1,21 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Building {
     private final BuildingType type;
     private final int col;
     private final int row;
     private boolean isOccupied;
     private static final int BASE_PRODUCTION_RATE = 2;
+    private ArrayList<Unit> workers;
 
     public Building(BuildingType type, int col, int row) {
         this.type = type;
         this.col = col;
         this.row = row;
         this.isOccupied = false;
+        workers = new ArrayList<>();
     }
 
     public void processTurnProduction(Tile tile, GlobalResourceManager economy) {
@@ -21,12 +25,15 @@ public class Building {
 
         if (!isOccupied) return;
 
-        ResourceType targetResource = type.getRequiredResource();
+        ResourceType targetResource = type.getOutputResource();
+        System.out.println(targetResource);
 
         if (targetResource != null && targetResource != ResourceType.NONE) {
             if (tile.hasResource(targetResource)) {
+                System.out.println(targetResource);
+                System.out.println(workers.size());
                 economy.addResource(targetResource,
-                        tile.extractResource(targetResource, BASE_PRODUCTION_RATE));
+                        tile.extractResource(targetResource, BASE_PRODUCTION_RATE * workers.size()));
             }
         }
     }
@@ -47,7 +54,17 @@ public class Building {
         return isOccupied;
     }
 
-    public void setOccupied(boolean occupied) {
-        isOccupied = occupied;
+    public void addWorker(Unit worker){
+        workers.add(worker);
+        isOccupied = true;
+    }
+
+    public void removeWorker(Unit worker){
+        workers.remove(worker);
+        if(workers.isEmpty()) isOccupied = false;
+    }
+
+    public boolean needWorker() {
+        return workers.size() < type.getMaxWorkerCapacity();
     }
 }

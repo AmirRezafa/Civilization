@@ -1,10 +1,7 @@
 package view;
 
 import controller.GameController;
-import model.BuildingType;
-import model.Tile;
-import model.Unit;
-import model.UnitType;
+import model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,39 +30,58 @@ public class UnitActionPanel extends JPanel {
 
         Unit selectedUnit = GC.getSelectedUnit();
 
+        setVisible(false);
         if (selectedUnit == null) {
             refreshUI();
             return;
         }
 
-        if (selectedUnit.getType() != UnitType.BUILDER){
-            this.setVisible(false);
-            return;
-        }
-        this.setVisible(true);
+        if (selectedUnit.getType() == UnitType.BUILDER) {
 
-        Tile currentTile = GC.getTileUnderUnit();
+            Tile currentTile = GC.getTileUnderUnit();
 
-        for (BuildingType bType : BuildingType.values()) {
-            if (bType == BuildingType.TOWN_HALL || bType == BuildingType.SETTLEMENT) {
-                continue;
+            for (BuildingType bType : BuildingType.values()) {
+                if (bType == BuildingType.TOWN_HALL || bType == BuildingType.SETTLEMENT) {
+                    continue;
+                }
+
+                JButton buildBtn = new JButton("Build " + bType.getDisplayName());
+                buildBtn.setFocusable(false);
+                buildBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+
+                boolean isValidTerrain = (currentTile.getTerrain() == bType.getRequiredTerrain());
+                boolean isTileEmpty = (currentTile.getBuilding() == null);
+
+                buildBtn.setEnabled(isValidTerrain && isTileEmpty);
+
+                buildBtn.addActionListener(e -> {
+                    GC.constructBuilding(bType);
+                    updateActions();
+                });
+
+                buttonContainer.add(buildBtn);
+                setVisible(true);
             }
+        }else if(selectedUnit.getType() == UnitType.WORKER){
+            Building build = GC.getTileUnderUnit().getBuilding();
+            if(build == null) return;
 
-            JButton buildBtn = new JButton("Build " + bType.getDisplayName());
-            buildBtn.setFocusable(false);
-            buildBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+            if(!build.needWorker()) return;
 
-            boolean isValidTerrain = (currentTile.getTerrain() == bType.getRequiredTerrain());
-            boolean isTileEmpty = (currentTile.getBuilding() == null);
+            JButton workBtn = new JButton("Work Here");
+            workBtn.setFocusable(false);
+            workBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+            workBtn.setBackground(new Color(46, 204, 113));
+            workBtn.setForeground(Color.WHITE);
 
-            buildBtn.setEnabled(isValidTerrain && isTileEmpty);
-
-            buildBtn.addActionListener(e -> {
-                GC.constructBuilding(bType);
+            workBtn.addActionListener(e -> {
+                GC.assignWorkerToBuilding();
                 updateActions();
             });
 
-            buttonContainer.add(buildBtn);
+            buttonContainer.add(workBtn);
+
+            setVisible(true);
         }
 
         refreshUI();

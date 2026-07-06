@@ -28,11 +28,6 @@ public class GameController {
     private Unit selectedUnit = null;
     private Tile tileUnderUnit = null;
 
-    private int food = 100;
-    private int wood = 100;
-    private int stone = 100;
-    private int iron = 50;
-
     private int currentTurn = 1;
 
     private Tile Townhall;
@@ -311,29 +306,6 @@ public class GameController {
         }
     }
 
-    public int getFood() {
-        return food;
-    }
-
-    public int getWood() {
-        return wood;
-    }
-
-    public int getStone() {
-        return stone;
-    }
-
-    public int getIron() {
-        return iron;
-    }
-
-    public void addResources(int f, int w, int s, int i) {
-        this.food += f;
-        this.wood += w;
-        this.stone += s;
-        this.iron += i;
-    }
-
     public GlobalResourceManager getEconomy() {
         return economy;
     }
@@ -358,5 +330,13 @@ public class GameController {
         buildings.add(building);
         tileUnderUnit.setBuilding(building);
         return true;
+    }
+
+    public void assignWorkerToBuilding() {
+
+        tileUnderUnit.getBuilding().addWorker(selectedUnit);
+        units.remove(selectedUnit);
+        selectedUnit = null;
+        tileUnderUnit = null;
     }
 }

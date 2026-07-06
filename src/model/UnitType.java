@@ -1,10 +1,10 @@
 package model;
 
 public enum UnitType {
-    EXPLORER("Explorer", 4, 3, 0, 1),
-    BUILDER("Builder", 2, 1, 3, 1),
-    WORKER("Worker", 2, 1, 0, 1),
-    BORDER_EXPANDER("Border Expander", 2, 1, 1, 1);
+    EXPLORER("Explorer", 6, 3, 0, 1),
+    BUILDER("Builder", 4, 1, 3, 1),
+    WORKER("Worker", 4, 1, 0, 1),
+    BORDER_EXPANDER("Border Expander", 4, 1, 1, 1);
 
     private final String displayName;
     private final int maxAP;

@@ -83,8 +83,8 @@ public class GameControlPanel extends JPanel {
     public void updateHUD() {
         var economy = GC.getEconomy();
 
-        foodLabel.setText("Food: " + economy.getResourceAmount(ResourceType.CATTLE) +
-                economy.getResourceAmount(ResourceType.WHEAT));
+        foodLabel.setText("Food: " + (economy.getResourceAmount(ResourceType.CATTLE) +
+                economy.getResourceAmount(ResourceType.WHEAT)));
         woodLabel.setText("Wood: " + economy.getResourceAmount(ResourceType.WOOD));
         stoneLabel.setText("Stone: " + economy.getResourceAmount(ResourceType.STONE));
         ironLabel.setText("Iron: " + economy.getResourceAmount(ResourceType.IRON));
