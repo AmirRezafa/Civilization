@@ -53,7 +53,41 @@ public class UnitActionPanel extends JPanel {
             if(building == null) return;
             int workerCount = building.getStationedWorkers().size();
 
-            if(workerCount == 0) return;
+            if(workerCount == 0){
+                if(building.getType() == BuildingType.TOWN_HALL){
+                    if (building.isProducing()) {
+                        String msg = "Producing: " + building.getProducingUnit().getDisplayName() +
+                                " (" + building.getProductionTurnsLeft() + " Turns Left)";
+                        JLabel producingLabel = new JLabel(msg);
+                        producingLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+                        producingLabel.setForeground(new Color(241, 196, 15));
+
+                        buttonContainer.add(producingLabel);
+                    } else {
+                        for (UnitType uType : UnitType.values()) {
+                            String btnText = "Train " + uType.getDisplayName() +
+                                    " (" + uType.getFoodCost() + " Food, " + uType.getBuildTurns() + " Turns)";
+
+                            JButton trainBtn = new JButton(btnText);
+                            trainBtn.setFocusable(false);
+                            trainBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+
+                            boolean canAfford = GC.hasEnoughFood(uType.getFoodCost()) &&
+                                    GC.checkUnitCap();
+                            trainBtn.setEnabled(canAfford);
+
+                            trainBtn.addActionListener(e -> {
+                                GC.startProducingUnitInTownHall(uType);
+                                updateActions();
+                            });
+
+                            buttonContainer.add(trainBtn);
+                        }
+                    }
+                    setVisible(true);
+                }
+                return;
+            }
 
             JButton unassignBtn = new JButton("Unassign Worker (" + workerCount + ")");
             unassignBtn.setFocusable(false);
@@ -76,7 +110,7 @@ public class UnitActionPanel extends JPanel {
 
         if (selectedUnit.getType() == UnitType.BUILDER) {
             for (BuildingType bType : BuildingType.values()) {
-                if (bType == BuildingType.TOWN_HALL || bType == BuildingType.SETTLEMENT) {
+                if (bType == BuildingType.TOWN_HALL) {
                     continue;
                 }
 
@@ -86,6 +120,8 @@ public class UnitActionPanel extends JPanel {
 
                 boolean isValidTerrain = (currentTile.getTerrain() == bType.getRequiredTerrain());
                 boolean isTileEmpty = (currentTile.getBuilding() == null);
+
+                if(bType == BuildingType.SETTLEMENT) isValidTerrain = true;
 
                 buildBtn.setEnabled(isValidTerrain && isTileEmpty);
 

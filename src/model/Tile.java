@@ -9,10 +9,6 @@ public class Tile {
     private Map<ResourceType, Integer> resources;
     private Building building;
 
-    private int resourceCapacity;
-    private int stationedWorkersCount;
-    private boolean isWithinBorders;
-
     private boolean isVisible = false;
     private boolean Explored = false;
 

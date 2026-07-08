@@ -1,23 +1,23 @@
 package model;
 
 public enum UnitType {
-    EXPLORER("Explorer", 6, 3, 0, 1),
-    BUILDER("Builder", 4, 1, 3, 1),
-    WORKER("Worker", 4, 1, 0, 1),
-    BORDER_EXPANDER("Border Expander", 4, 1, 1, 1);
+    EXPLORER("Explorer", 6, 3, 20, 1),
+    BUILDER("Builder", 4, 2, 20, 3),
+    WORKER("Worker", 4, 2, 10, 1),
+    BORDER_EXPANDER("Border Expander", 4, 4, 15, 1);
 
     private final String displayName;
     private final int maxAP;
-    private final int visionRadius;
-    private final int baseCharges;
-    private final int foodConsumption;
+    private final int buildTurns;
+    private final int foodCost;
+    private final int chargesCount;
 
-    UnitType(String displayName, int maxAP, int visionRadius, int baseCharges, int foodConsumption) {
+    UnitType(String displayName, int maxAP, int buildTurns, int foodCost, int chargesCount) {
         this.displayName = displayName;
         this.maxAP = maxAP;
-        this.visionRadius = visionRadius;
-        this.baseCharges = baseCharges;
-        this.foodConsumption = foodConsumption;
+        this.buildTurns = buildTurns;
+        this.foodCost = foodCost;
+        this.chargesCount = chargesCount;
     }
 
     public String getDisplayName() {
@@ -28,15 +28,15 @@ public enum UnitType {
         return maxAP;
     }
 
-    public int getVisionRadius() {
-        return visionRadius;
+    public int getChargesCount() {
+        return chargesCount;
     }
 
-    public int getBaseCharges() {
-        return baseCharges;
+    public int getBuildTurns() {
+        return buildTurns;
     }
 
-    public int getFoodConsumption() {
-        return foodConsumption;
+    public int getFoodCost() {
+        return foodCost;
     }
 }

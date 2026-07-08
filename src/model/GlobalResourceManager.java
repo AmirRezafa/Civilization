@@ -37,6 +37,22 @@ public class GlobalResourceManager {
         return false;
     }
 
+    public boolean spendFood(int amount){
+        int current = resources.getOrDefault(ResourceType.WHEAT, 0);
+        if(current >= amount){
+            resources.put(ResourceType.WHEAT, current - amount);
+            return true;
+        }else{
+            int secCurrent = resources.getOrDefault(ResourceType.CATTLE, 0);
+            if(secCurrent + current >= amount){
+                resources.put(ResourceType.WHEAT, 0);
+                resources.put(ResourceType.CATTLE, secCurrent - (amount - current));
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean hasEnough(ResourceType type, int amount){
         int current = resources.getOrDefault(type, 0);
         return (amount <= current);
@@ -44,5 +60,11 @@ public class GlobalResourceManager {
 
     public int getResourceAmount(ResourceType type) {
         return resources.getOrDefault(type, 0);
+    }
+
+    public boolean hasEnoughFood(int amount) {
+        int current = resources.getOrDefault(ResourceType.WHEAT, 0) +
+                resources.getOrDefault(ResourceType.CATTLE, 0);
+        return (amount <= current);
     }
 }

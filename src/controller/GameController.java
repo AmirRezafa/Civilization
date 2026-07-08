@@ -12,6 +12,7 @@ import java.util.*;
 
 public class GameController {
     private final static int BUILD_COST = 2;
+    private final static int FOOD_REQUIREMENT = 1;
     private static GameController instance;
     private AnimationController animationController;
     private Ground ground;
@@ -33,6 +34,8 @@ public class GameController {
     private Tile Townhall;
 
     private int TownhallX = 10, TownhallY = 10;
+
+    private int unitCapacity = 5;
 
     public GameController(Ground ground) {
         instance = this;
@@ -147,11 +150,11 @@ public class GameController {
         this.Tiles = tempTiles;
 
         Townhall.setBuilding(new Building(BuildingType.TOWN_HALL, TownhallX, TownhallY));
-        units.add(new Unit(UnitType.BUILDER, TownhallX, TownhallY + 1));
-        units.add(new Unit(UnitType.BUILDER, TownhallX + 1, TownhallY));
-        units.add(new Unit(UnitType.WORKER, TownhallX - 1, TownhallY + 1));
-        units.add(new Unit(UnitType.WORKER, TownhallX, TownhallY - 1));
-        units.add(new Unit(UnitType.EXPLORER, TownhallX + 1, TownhallY + 1));
+        addUnit(new Unit(UnitType.BUILDER, TownhallX, TownhallY + 1));
+        addUnit(new Unit(UnitType.BUILDER, TownhallX + 1, TownhallY));
+        addUnit(new Unit(UnitType.WORKER, TownhallX - 1, TownhallY + 1));
+        addUnit(new Unit(UnitType.WORKER, TownhallX, TownhallY - 1));
+        addUnit(new Unit(UnitType.EXPLORER, TownhallX + 1, TownhallY + 1));
 
     }
 
@@ -165,15 +168,19 @@ public class GameController {
         }
 
         for(Unit unit: units){
-            int foodRequirement = unit.getType().getFoodConsumption();
-
-            boolean hasFed = economy.spendResource(ResourceType.WHEAT, foodRequirement);
-            if(!hasFed) hasFed = economy.spendResource(ResourceType.CATTLE, foodRequirement);
-
+            boolean hasFed = economy.spendFood(FOOD_REQUIREMENT);
             if(!hasFed) System.out.println("Need Food!!");
-
             unit.resetActionPoints();
+        }
 
+        if(Townhall.getBuilding().isProducing()){
+            Townhall.getBuilding().decrementProductionTurns();
+            if (Townhall.getBuilding().getProductionTurnsLeft() <= 0) {
+                Unit newUnit = new Unit(Townhall.getBuilding().getProducingUnit(), Townhall.getCol(), Townhall.getRow());
+                addUnit(newUnit);
+
+                Townhall.getBuilding().clearProduction();
+            }
         }
     }
 
@@ -238,6 +245,7 @@ public class GameController {
 
     private Unit getUnitAt(int col, int row) {
         for (Unit u : units) {
+            if (u.isAssigned()) continue;
             if (u.getCol() == col && u.getRow() == row) return u;
         }
         return null;
@@ -318,6 +326,7 @@ public class GameController {
     public boolean constructBuilding(BuildingType bType) {
         if(selectedUnit.getCurrentAP() < BUILD_COST) return false;
         selectedUnit.setCurrentAP(selectedUnit.getCurrentAP() - BUILD_COST);
+
         if(!(economy.hasEnough(ResourceType.WOOD, bType.getWoodCost()) &&
             economy.hasEnough(ResourceType.STONE, bType.getStoneCost()) &&
             economy.hasEnough(ResourceType.IRON, bType.getIronCost())))
@@ -326,6 +335,15 @@ public class GameController {
         economy.spendResource(ResourceType.WOOD, bType.getWoodCost());
         economy.spendResource(ResourceType.STONE, bType.getStoneCost());
         economy.spendResource(ResourceType.IRON, bType.getIronCost());
+
+        if(bType == BuildingType.SETTLEMENT) unitCapacity += 3;
+
+        selectedUnit.useCharge();
+        System.out.println(selectedUnit.getCharge() + " hoyyyyy");
+        if(selectedUnit.getCharge() == 0){
+            units.remove(selectedUnit);
+            selectedUnit = null;
+        }
 
         Building building = new Building(bType, tileUnderUnit.getCol(), tileUnderUnit.getRow());
         buildings.add(building);
@@ -336,7 +354,7 @@ public class GameController {
     public void assignWorkerToBuilding() {
 
         tileUnderUnit.getBuilding().addWorker(selectedUnit);
-        units.remove(selectedUnit);
+        selectedUnit.setAssigned(true);
         selectedUnit = null;
         tileUnderUnit = null;
     }
@@ -345,6 +363,28 @@ public class GameController {
         Building building = tileUnderUnit.getBuilding();
         Unit worker = building.getLastWorker();
         building.removeWorker(worker);
-        units.add(worker);
+        worker.setAssigned(false);
+    }
+
+    public boolean hasEnoughFood(int foodCost) {
+        return(economy.hasEnoughFood(foodCost));
+    }
+
+    public void startProducingUnitInTownHall(UnitType uType) {
+        if(Townhall.getBuilding().isProducing()){
+            System.out.println("Townhall is busy :((");
+            return;
+        }
+        int cost = uType.getFoodCost();
+        boolean isPaid = economy.spendFood(cost);
+
+        if(isPaid){
+            Townhall.getBuilding().startProducing(uType);
+            System.out.println("Producing Started :)))");
+        }
+    }
+
+    public boolean checkUnitCap(){
+        return (units.size() < unitCapacity);
     }
 }

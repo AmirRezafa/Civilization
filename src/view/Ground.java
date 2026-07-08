@@ -58,6 +58,7 @@ public class Ground extends JPanel{
 
         g2.setColor(Color.RED);
         for (Unit unit : GC.getUnits()) {
+            if(unit.isAssigned()) continue;
             UnitView.show(unit, a, unit == GC.getSelectedUnit(), g2);
         }
 

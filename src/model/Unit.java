@@ -12,6 +12,9 @@ public class Unit {
     private double x, y;
     private double targetX, targetY;
 
+    private int charge;
+    private boolean assigned = false;
+
     public Unit(UnitType type, int startCol, int startRow) {
         this.type = type;
         this.col = startCol;
@@ -20,6 +23,7 @@ public class Unit {
         y = ((row + 1) * Math.sqrt(3) +
                 (col % 2 == 0 ? Math.sqrt(3)/2 : 0));
         this.currentAP = type.getMaxAP();
+        this.charge = type.getChargesCount();
         this.isMoving = false;
     }
 
@@ -97,7 +101,22 @@ public class Unit {
         y = targetY;
     }
 
+    public void useCharge(){
+        charge--;
+    }
+    public int getCharge() {
+        return charge;
+    }
+
     public void resetActionPoints(){
         currentAP = type.getMaxAP();
+    }
+
+    public boolean isAssigned() {
+        return assigned;
+    }
+
+    public void setAssigned(boolean assigned) {
+        this.assigned = assigned;
     }
 }

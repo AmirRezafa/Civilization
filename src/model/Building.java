@@ -10,6 +10,9 @@ public class Building {
     private static final int BASE_PRODUCTION_RATE = 2;
     private ArrayList<Unit> workers;
 
+    private UnitType producingUnit = null;
+    private int productionTurnsLeft = 0;
+
     public Building(BuildingType type, int col, int row) {
         this.type = type;
         this.col = col;
@@ -19,11 +22,12 @@ public class Building {
     }
 
     public void processTurnProduction(Tile tile, GlobalResourceManager economy) {
-        if (type == BuildingType.TOWN_HALL || type == BuildingType.SETTLEMENT) {
+        if (type == BuildingType.TOWN_HALL) {
+            economy.addResource(ResourceType.WHEAT, 1);
             return;
         }
 
-        if (!isOccupied) return;
+        if (!isOccupied || type == BuildingType.SETTLEMENT) return;
 
         ResourceType targetResource = type.getOutputResource();
         System.out.println(targetResource);
@@ -74,5 +78,31 @@ public class Building {
 
     public Unit getLastWorker() {
         return workers.get(workers.size() - 1);
+    }
+
+    public void startProducing(UnitType type) {
+        this.producingUnit = type;
+        this.productionTurnsLeft = type.getBuildTurns();
+    }
+
+    public boolean isProducing() {
+        return (producingUnit != null);
+    }
+
+    public UnitType getProducingUnit() {
+        return producingUnit;
+    }
+
+    public int getProductionTurnsLeft() {
+        return productionTurnsLeft;
+    }
+
+    public void decrementProductionTurns() {
+        productionTurnsLeft--;
+    }
+
+    public void clearProduction() {
+        producingUnit = null;
+        productionTurnsLeft = 0;
     }
 }
