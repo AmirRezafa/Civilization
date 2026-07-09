@@ -4,19 +4,19 @@ import java.util.ArrayList;
 
 public enum BuildingType {
     LUMBER_MILL("Lumber Mill", TerrainType.FOREST, ResourceType.WOOD
-            , 0, 0, 0, 2, 1),
+            , 0, 0, 0, 2, 1, 0),
     STONE_MINE("Stone Mine", TerrainType.MOUNTAIN, ResourceType.STONE,
-            15, 0, 0, 3, 2),
+            15, 0, 0, 3, 2, 0),
     IRON_MINE("Iron Mine", TerrainType.MOUNTAIN, ResourceType.IRON,
-            25, 0, 0, 3, 2),
+            25, 0, 0, 3, 2, 0),
     FARM("Farm", TerrainType.MEADOW, ResourceType.WHEAT,
-            0, 0, 0, 2, 2),
+            0, 0, 0, 2, 2, 0),
     STABLE("Stable", TerrainType.PLAIN, ResourceType.CATTLE,
-            20, 0, 0, 2, 3),
+            20, 0, 0, 2, 3, 0),
     TOWN_HALL("Town Hall", null, ResourceType.NONE,
-            0, 0, 0, 0, 0),
+            0, 0, 0, 0, 0, 3),
     SETTLEMENT("Settlement", null, ResourceType.NONE,
-            25, 15, 10, 0, 2);
+            25, 15, 10, 0, 2, 2);
 
     private final String displayName;
     private final TerrainType requiredTerrain;
@@ -29,8 +29,10 @@ public enum BuildingType {
 
     private final int maxWorkerCapacity;
 
+    private final int visionRadius;
+
     BuildingType(String displayName, TerrainType requiredTerrain, ResourceType outputResource,
-                 int woodCost, int stoneCost, int ironCost, int maxWorkerCapacity, int apCost) {
+                 int woodCost, int stoneCost, int ironCost, int maxWorkerCapacity, int apCost, int visionRadius) {
         this.displayName = displayName;
         this.requiredTerrain = requiredTerrain;
         this.outputResource = outputResource;
@@ -39,6 +41,7 @@ public enum BuildingType {
         this.ironCost = ironCost;
         this.maxWorkerCapacity = maxWorkerCapacity;
         this.apCost = apCost;
+        this.visionRadius = visionRadius;
     }
 
     public String getDisplayName() {
@@ -83,5 +86,9 @@ public enum BuildingType {
         if (costs.isEmpty()) return "Free";
 
         return String.join(", ", costs);
+    }
+
+    public int getVisionRadius() {
+        return visionRadius;
     }
 }

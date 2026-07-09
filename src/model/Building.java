@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 
 public class Building {
+    private int col, row;
+
     private final BuildingType type;
     private boolean isOccupied;
     private ArrayList<Unit> workers;
@@ -10,10 +12,22 @@ public class Building {
     private UnitType producingUnit = null;
     private int productionTurnsLeft = 0;
 
-    public Building(BuildingType type) {
+
+    public Building(BuildingType type, int col, int row) {
+        this.col = col;
+        this.row = row;
+
         this.type = type;
         this.isOccupied = false;
         workers = new ArrayList<>();
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public int getRow() {
+        return row;
     }
 
     public BuildingType getType() {

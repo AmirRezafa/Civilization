@@ -24,6 +24,7 @@ public class GameController {
     final static int ROWS = 100, COLS = 100;
 
     private ArrayList<Tile> Tiles = new ArrayList<>();
+    private Tile[][] tileGrid = new Tile[ROWS][COLS];
     private ArrayList<Unit> units = new ArrayList<>();
     private ArrayList<Building> buildings = new ArrayList<>();
 
@@ -151,13 +152,15 @@ public class GameController {
                         break;
                 }
                 Tile tile = new Tile(col, row, finalType, tileResources);
+                tileGrid[col][row] = tile;
                 tempTiles.add(tile);
                 if(col == TownhallX && row == TownhallY) Townhall = tile;
             }
         }
         this.Tiles = tempTiles;
-
-        Townhall.setBuilding(new Building(BuildingType.TOWN_HALL));
+        Building townhall = new Building(BuildingType.TOWN_HALL, TownhallX, TownhallY);
+        buildings.add(townhall);
+        Townhall.setBuilding(townhall);
         addUnit(new Unit(UnitType.BUILDER, TownhallX, TownhallY + 1));
         addUnit(new Unit(UnitType.BUILDER, TownhallX + 1, TownhallY));
         addUnit(new Unit(UnitType.WORKER, TownhallX - 1, TownhallY + 1));
@@ -226,20 +229,34 @@ public class GameController {
         return camera.getA();
     }
 
-    private void updateFog() {
-        int visionRadius = 2;
-        for (Tile tile : Tiles) {
-            boolean visible = false;
-//DEBUG:            visible = true;
-            for (Unit unit : units) {
-                if (Math.abs(tile.getCol() - unit.getCol()) <= visionRadius &&
-                        Math.abs(tile.getRow() - unit.getRow()) <= visionRadius) {
-                    visible = true;
-                    break;
-                }
+    private void revealArea(int centerCol, int centerRow, int radius) {
+        int startCol = Math.max(0, centerCol - radius);
+        int endCol = Math.min(COLS - 1, centerCol + radius);
+        int startRow = Math.max(0, centerRow - radius);
+        int endRow = Math.min(ROWS - 1, centerRow + radius);
+
+        int radiust2 = radius * radius;
+
+        for (int col = startCol; col <= endCol; col++) {
+            for (int row = startRow; row <= endRow; row++) {
+                int dx = col - centerCol;
+                int dy = row - centerRow;
+
+                if ((dx * dx) + (dy * dy) <= radiust2)
+                    tileGrid[col][row].setVisible(true);
             }
-            tile.setVisible(visible);
         }
+    }
+
+    private void updateFog() {
+        for (Tile tile : Tiles)
+            tile.setVisible(false);
+
+        for (Unit unit : units)
+            revealArea(unit.getCol(), unit.getRow(), unit.getType().getVisionRadius());
+
+        for (Building building : buildings)
+            revealArea(building.getCol(), building.getRow(), building.getType().getVisionRadius());
     }
 
     public static GameController getInstance() {
@@ -386,7 +403,7 @@ public class GameController {
             selectedUnit = null;
         }
 
-        Building building = new Building(bType);
+        Building building = new Building(bType, tileUnderUnit.getCol(), tileUnderUnit.getRow());
         buildings.add(building);
 
         tileUnderUnit.setBuilding(building);
