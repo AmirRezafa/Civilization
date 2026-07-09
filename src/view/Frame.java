@@ -49,7 +49,7 @@ public class Frame extends JFrame {
 
         ground.setBounds(0, 0, paneWidth, paneHeight);
 
-        int actionHeight = (int) (GameController.getInstance().getA() * 3.4);
+        int actionHeight = (int) (GameController.getInstance().getB() * 3.4);
         int actionY = paneHeight - actionHeight;
         actionPanel.setBounds(0, actionY, paneWidth, actionHeight);
 

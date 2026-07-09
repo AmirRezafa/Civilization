@@ -182,9 +182,16 @@ public class GameController {
             return;
         }
 
-        economy.spendResource(ResourceType.WOOD, type.getWoodCost() / 10);
-        economy.spendResource(ResourceType.STONE, type.getStoneCost() / 10);
-        economy.spendResource(ResourceType.IRON, type.getIronCost() / 10);
+        boolean spended = true;
+        if(!economy.spendResource(ResourceType.WOOD, type.getWoodCost() / 10)) spended = false;
+        if(!economy.spendResource(ResourceType.STONE, type.getStoneCost() / 10)) spended = false;
+        if(!economy.spendResource(ResourceType.IRON, type.getIronCost() / 10)) spended = false;
+
+        if(!spended) building.upkeepFailed();
+        if(building.getFailedCount() == 3){
+            buildings.remove(building);
+            return;
+        }
 
         if (!building.isOccupied() || type == BuildingType.SETTLEMENT) return;
 
@@ -208,12 +215,15 @@ public class GameController {
                 processTurnProduction(tile, this.economy);
             }
         }
-
+        boolean isStarvation = false;
         for(Unit unit: units){
             boolean hasFed = economy.spendFood(FOOD_REQUIREMENT);
-            if(!hasFed) System.out.println("Need Food!!");
-            unit.resetActionPoints();
+            if(!hasFed){
+                isStarvation = true;
+            };
+            unit.resetActionPoints(!hasFed || unit.isAssigned());
         }
+        if(isStarvation) GameControlPanel.getInstance().showStarvationAlert();
 
         if(Townhall.getBuilding().isProducing()){
             Townhall.getBuilding().decrementProductionTurns();
@@ -228,6 +238,10 @@ public class GameController {
 
     public int getA() {
         return camera.getA();
+    }
+
+    public int getB() {
+        return camera.getB();
     }
 
     private void revealArea(int centerCol, int centerRow, int radius) {
@@ -573,5 +587,12 @@ public class GameController {
 
     public int getUnitCapacity(){
         return unitCapacity;
+    }
+
+    public boolean hasUnitsWithRemainingAP() {
+        for(Unit unit: units){
+            if(unit.getCurrentAP() > 0) return true;
+        }
+        return false;
     }
 }

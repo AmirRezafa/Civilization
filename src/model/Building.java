@@ -12,6 +12,8 @@ public class Building {
     private UnitType producingUnit = null;
     private int productionTurnsLeft = 0;
 
+    private int failedCount = 0;
+
 
     public Building(BuildingType type, int col, int row) {
         this.col = col;
@@ -84,5 +86,13 @@ public class Building {
     public void clearProduction() {
         producingUnit = null;
         productionTurnsLeft = 0;
+    }
+
+    public void upkeepFailed() {
+        failedCount++;
+    }
+
+    public int getFailedCount() {
+        return failedCount;
     }
 }

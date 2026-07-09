@@ -79,6 +79,25 @@ public class GameControlPanel extends JPanel {
     }
 
     private void handleNextTurnAction() {
+        if (GC.hasUnitsWithRemainingAP()) {
+
+            String warningMessage = "<html><div style='font-family: \"Segoe UI\", sans-serif;'>"
+                    + "<b>Hold on, bro!</b> some of your units still have Action Points (AP) left.<br>"
+                    + "Are you sure you want to end this turn and waste their moves?"
+                    + "</div></html>";
+
+            int response = JOptionPane.showConfirmDialog(
+                    this,
+                    warningMessage,
+                    "Unused Action Points",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            if (response != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
         GC.advanceTurn();
 
         turnLabel.setText("Turn: " + GC.getCurrentTurn());
@@ -126,5 +145,25 @@ public class GameControlPanel extends JPanel {
                 "</html>";
 
         unitLabel.setToolTipText(tooltipText);
+    }
+
+// آره خلاصه اینجا احساس صمیمیت کردم
+    public void showStarvationAlert() {
+        String alertHtml = "<html><div style='width: 280px; text-align: left; font-family: \"Segoe UI\", sans-serif; padding: 5px;'>"
+                + "<h2 style='color: #e74c3c; margin: 0 0 10px 0; font-size: 16px;'>CRITICAL CRISIS!</h2>"
+                + "<p style='color: #333333; font-size: 13px; line-height: 1.6;'>"
+                + "<b>Bro, we are in a total crisis!</b><br>"
+                + "Food reserves hit zero and starvation is kicking in. "
+                + "Fix the situation ASAP before your units start dropping dead!</p>"
+                + "</div></html>";
+
+        JLabel label = new JLabel(alertHtml);
+
+        JOptionPane.showMessageDialog(
+                this,
+                label,
+                "Emergency",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 }

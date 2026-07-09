@@ -296,7 +296,7 @@ public class UnitActionPanel extends JPanel {
     public void updateActions() {
         buttonContainer.removeAll();
 
-        a = GC.getA();
+        a = GC.getB();
         int hGap = (int) (a * 0.6);
         int vGap = (int) (a * 0.8);
         buttonContainer.setLayout(new FlowLayout(FlowLayout.LEFT, hGap, vGap));

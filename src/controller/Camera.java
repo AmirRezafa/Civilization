@@ -126,4 +126,10 @@ public class Camera implements MouseMotionListener, MouseListener, MouseWheelLis
         if (baseA <= 0) baseA = 16;
         return (int) (baseA * scale);
     }
+
+    public int getB() {
+        int baseB = Math.min(Ground.getheight(), Ground.getwidth()) / 45;
+        if (baseB <= 0) baseB = 16;
+        return baseB * 2;
+    }
 }

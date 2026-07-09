@@ -108,7 +108,8 @@ public class Unit {
         return charge;
     }
 
-    public void resetActionPoints(){
+    public void resetActionPoints(boolean less){
+        if(less) currentAP = type.getMaxAP() - 2;
         currentAP = type.getMaxAP();
     }
 
