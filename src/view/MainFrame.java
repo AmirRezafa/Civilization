@@ -66,6 +66,8 @@ public class MainFrame extends JFrame {
 
         setLocationRelativeTo(null);
         setVisible(true);
+
+        controller.AudioManager.getInstance().playBGM("assets/bgm.wav");
     }
 
     public void showGame() {

@@ -62,7 +62,7 @@ public class SettingPanel extends JPanel {
 
 
         slider.addChangeListener(e -> {
-            System.out.println(slider.getValue());
+            controller.AudioManager.getInstance().setVolume(slider.getValue());
         });
         add(slider, gbc);
 
