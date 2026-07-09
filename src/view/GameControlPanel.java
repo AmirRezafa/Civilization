@@ -2,6 +2,7 @@ package view;
 
 import controller.GameController;
 import model.ResourceType;
+import model.UnitType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,7 @@ public class GameControlPanel extends JPanel {
     private final GameController GC;
 
     private JLabel turnLabel;
+    private JLabel unitLabel;
     private JLabel foodLabel;
     private JLabel woodLabel;
     private JLabel stoneLabel;
@@ -53,6 +55,8 @@ public class GameControlPanel extends JPanel {
         turnLabel.setForeground(new Color(241, 196, 15));
         this.add(turnLabel);
 
+
+        unitLabel = createLabel(hudFont, textColor);
         foodLabel = createLabel(hudFont, textColor);
         woodLabel = createLabel(hudFont, textColor);
         stoneLabel = createLabel(hudFont, textColor);
@@ -90,6 +94,7 @@ public class GameControlPanel extends JPanel {
     public void updateHUD() {
         var economy = GC.getEconomy();
         GC.updateNetChanges();
+        unitLabel.setText("Unit: " + GC.getUnitCounts() + "/" + GC.getUnitCapacity());
         foodLabel.setText("Food: " + (economy.getNetChanges(ResourceType.CATTLE) +
                 economy.getNetChanges(ResourceType.WHEAT)) + " | " +
                 (economy.getResourceAmount(ResourceType.CATTLE) +
@@ -105,5 +110,21 @@ public class GameControlPanel extends JPanel {
         ironLabel.setText("Iron: " + economy.getNetChanges(ResourceType.IRON) + " | " +
                 economy.getResourceAmount(ResourceType.IRON) + "/" +
                 economy.getResourceCapacityAmount(ResourceType.IRON));
+
+        int explorerCounts = GC.getUnitCounts(UnitType.EXPLORER);
+        int builderCounts = GC.getUnitCounts(UnitType.BUILDER);
+        int workerCounts = GC.getUnitCounts(UnitType.WORKER);
+        int expanderCounts = GC.getUnitCounts(UnitType.BORDER_EXPANDER);
+
+
+// ساخت یک متن HTML شیک برای تول‌تیپ
+        String tooltipText = "<html>" +
+                "Explorers: " + explorerCounts + "<br>" +
+                "Builders: " + builderCounts + "<br>" +
+                "Workers: " + workerCounts + "<br>" +
+                "Expanders: " + expanderCounts +
+                "</html>";
+
+        unitLabel.setToolTipText(tooltipText);
     }
 }

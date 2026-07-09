@@ -40,6 +40,7 @@ public class GameController {
     private int TownhallX = 10, TownhallY = 10;
 
     private int unitCapacity = 9;
+    private Map<UnitType, Integer> unitCount = new HashMap<>();
 
     private boolean stoneTech = false;
     private boolean ironTech = false;
@@ -288,10 +289,12 @@ public class GameController {
 
     public void addUnit(Unit unit){
         units.add(unit);
+        unitCount.put(unit.getType(), unitCount.getOrDefault(unit.getType(), 0) + 1);
     }
 
     public void deleteUnit(Unit unit){
         units.remove(unit);
+        unitCount.put(unit.getType(), unitCount.getOrDefault(unit.getType(), 0) - 1);
     }
 
     public Unit getSelectedUnit() {
@@ -467,7 +470,7 @@ public class GameController {
                 tile.setOwned();
             }
         }
-
+        if(selectedUnit == null) return;
         deleteUnit(selectedUnit);
         selectedUnit = null;
     }
@@ -560,4 +563,15 @@ public class GameController {
 
     }
 
+    public int getUnitCounts(){
+        return units.size();
+    }
+
+    public int getUnitCounts(UnitType type){
+        return unitCount.getOrDefault(type, 0);
+    }
+
+    public int getUnitCapacity(){
+        return unitCapacity;
+    }
 }
