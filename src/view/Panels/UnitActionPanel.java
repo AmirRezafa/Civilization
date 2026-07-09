@@ -1,4 +1,4 @@
-package view;
+package view.Panels;
 
 import controller.GameController;
 import model.*;

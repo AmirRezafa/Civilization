@@ -1,7 +1,5 @@
 package model;
 
-import view.UnitActionPanel;
-
 public class Unit {
     private UnitType type;
     private int col;

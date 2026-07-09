@@ -1,36 +1,59 @@
 package view;
 
 import controller.GameController;
+import view.Panels.GameControlPanel;
+import view.Panels.MainMenuPanel;
+import view.Panels.SettingPanel;
+import view.Panels.UnitActionPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-public class Frame extends JFrame {
+public class MainFrame extends JFrame {
+    private CardLayout cardLayout;
+    private JPanel mainCardContainer;
+
     private JLayeredPane layeredPane;
     private Ground ground;
     private GameControlPanel GCP;
     private UnitActionPanel actionPanel;
 
-    public Frame(){
+    private MainMenuPanel mainMenuPanel;
+
+    public MainFrame(){
         super("Civilization");
         setSize(1200, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.setLayout(new BorderLayout());
+        cardLayout = new CardLayout();
+        mainCardContainer = new JPanel(cardLayout);
+
+        mainMenuPanel = new MainMenuPanel(this);
+        mainCardContainer.add(mainMenuPanel, "MENU");
+
+        SettingPanel settingPanel = new SettingPanel(this);
+        mainCardContainer.add(settingPanel, "SETTINGS");
+
+        JPanel gameContainer = new JPanel(new BorderLayout());
 
         ground = new Ground();
         GCP = new GameControlPanel();
         actionPanel = new UnitActionPanel();
-
         layeredPane = new JLayeredPane();
 
         layeredPane.add(ground, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(actionPanel, JLayeredPane.PALETTE_LAYER);
 
-        this.add(GCP, BorderLayout.NORTH);
-        this.add(layeredPane, BorderLayout.CENTER);
+        gameContainer.add(GCP, BorderLayout.NORTH);
+        gameContainer.add(layeredPane, BorderLayout.CENTER);
+
+        mainCardContainer.add(gameContainer, "GAME");
+
+        this.setLayout(new BorderLayout());
+        this.add(mainCardContainer, BorderLayout.CENTER);
+
 
         layeredPane.addComponentListener(new ComponentAdapter() {
             @Override
@@ -39,8 +62,22 @@ public class Frame extends JFrame {
             }
         });
 
+        showMenu();
+
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    public void showGame() {
+        cardLayout.show(mainCardContainer, "GAME");
+    }
+
+    public void showMenu() {
+        cardLayout.show(mainCardContainer, "MENU");
+    }
+
+    public void showSettings() {
+        cardLayout.show(mainCardContainer, "SETTINGS");
     }
 
     private void updateLayeredLayoutBounds() {

@@ -1,9 +1,9 @@
 package controller;
 
 import model.*;
-import view.GameControlPanel;
+import view.Panels.GameControlPanel;
 import view.Ground;
-import view.UnitActionPanel;
+import view.Panels.UnitActionPanel;
 
 import javax.swing.*;
 import javax.swing.Timer;
