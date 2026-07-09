@@ -120,10 +120,11 @@ public class UnitActionPanel extends JPanel {
 
                 boolean isValidTerrain = (currentTile.getTerrain() == bType.getRequiredTerrain());
                 boolean isTileEmpty = (currentTile.getBuilding() == null);
+                boolean inTerritory = currentTile.isOwned();
 
                 if(bType == BuildingType.SETTLEMENT) isValidTerrain = true;
 
-                buildBtn.setEnabled(isValidTerrain && isTileEmpty);
+                buildBtn.setEnabled(isValidTerrain && isTileEmpty && inTerritory);
 
                 buildBtn.addActionListener(e -> {
                     GC.constructBuilding(bType);
@@ -152,6 +153,20 @@ public class UnitActionPanel extends JPanel {
 
             buttonContainer.add(workBtn);
 
+            setVisible(true);
+        } else if (selectedUnit.getType() == UnitType.BORDER_EXPANDER) {
+            JButton expandBtn = new JButton("Expand Borders Here");
+            expandBtn.setFocusable(false);
+            expandBtn.setBackground(new Color(155, 89, 182));
+            expandBtn.setForeground(Color.WHITE);
+            expandBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+
+            expandBtn.addActionListener(e -> {
+                GC.expandTerritory();
+                updateActions();
+            });
+
+            buttonContainer.add(expandBtn);
             setVisible(true);
         }
 

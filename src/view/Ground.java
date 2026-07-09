@@ -48,7 +48,7 @@ public class Ground extends JPanel{
                 continue;
             }
 
-            Hex.show(x, y, a, g2, getTerrainColor(tile.getTerrain()), tile.isVisible(), tile.isExplored());
+            TileView.show(x, y, a, g2, getTerrainColor(tile.getTerrain()), tile);
             ResourceView.show(tile, a, x, y, g2);
             StationedWorkerView.show(tile, a, x, y, g2);
             if(tile.getBuilding() != null && tile.isVisible()){

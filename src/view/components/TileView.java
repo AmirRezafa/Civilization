@@ -1,12 +1,17 @@
 package view.components;
 
+import model.Tile;
+
 import java.awt.*;
 
 import static view.Utils.brighten;
 import static view.Utils.darken;
 
-public class Hex {
-    public static void show(double centerX, double centerY, int radius, Graphics2D g2, Color terrainColor, boolean isVisible, boolean wasExplored) {
+public class TileView {
+    public static void show(double centerX, double centerY, int radius, Graphics2D g2, Color terrainColor, Tile tile) {
+        boolean isVisible = tile.isVisible();
+        boolean wasExplored = tile.isExplored();
+
         double drawRadius = radius * 0.92;
 
         int[] x = new int[6];
@@ -52,6 +57,15 @@ public class Hex {
         }
 
         g2.setStroke(new BasicStroke(1.0f));
+
+        if (wasExplored && tile.isOwned()) {
+            g2.setColor(new Color(52, 152, 219, 50));
+            g2.fillPolygon(hex);
+
+            g2.setColor(new Color(52, 152, 219, 200));
+            g2.setStroke(new BasicStroke(3f));
+            g2.drawPolygon(hex);
+        }
     }
 
 }

@@ -155,6 +155,9 @@ public class GameController {
         addUnit(new Unit(UnitType.WORKER, TownhallX - 1, TownhallY + 1));
         addUnit(new Unit(UnitType.WORKER, TownhallX, TownhallY - 1));
         addUnit(new Unit(UnitType.EXPLORER, TownhallX + 1, TownhallY + 1));
+        tileUnderUnit = Townhall;
+        expandTerritory();
+        tileUnderUnit = null;
 
     }
 
@@ -386,5 +389,18 @@ public class GameController {
 
     public boolean checkUnitCap(){
         return (units.size() < unitCapacity);
+    }
+
+
+    public void expandTerritory() {
+        tileUnderUnit.setOwned();
+        for (Tile tile: Tiles) {
+            if (isNeighbor(tile.getCol(), tile.getRow(), tileUnderUnit.getCol(), tileUnderUnit.getRow())) {
+                tile.setOwned();
+            }
+        }
+
+        units.remove(selectedUnit);
+        selectedUnit = null;
     }
 }

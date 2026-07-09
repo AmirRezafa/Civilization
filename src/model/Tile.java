@@ -12,11 +12,14 @@ public class Tile {
     private boolean isVisible = false;
     private boolean Explored = false;
 
+    private boolean isOwned;
+
     public Tile(int col, int row, TerrainType terrain, Map<ResourceType, Integer> resources) {
         this.col = col;
         this.row = row;
         this.terrain = terrain;
         this.resources = resources;
+        this.isOwned = false;
     }
 
     public boolean hasResource(ResourceType type) {
@@ -65,5 +68,13 @@ public class Tile {
 
     public Map<ResourceType, Integer> getResources() {
         return resources;
+    }
+
+    public boolean isOwned() {
+        return isOwned;
+    }
+
+    public void setOwned() {
+        isOwned = true;
     }
 }

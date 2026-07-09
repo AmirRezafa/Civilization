@@ -20,7 +20,9 @@ public class GlobalResourceManager {
 
         this.resources.put(ResourceType.WHEAT, 50);
         this.resources.put(ResourceType.WOOD, 50);
-        this.resources.put(ResourceType.IRON, 10);
+        this.resources.put(ResourceType.IRON, 20);
+        this.resources.put(ResourceType.STONE, 30);
+
     }
 
     public void addResource(ResourceType type, int amount) {
