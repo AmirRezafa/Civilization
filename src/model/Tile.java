@@ -33,6 +33,10 @@ public class Tile {
         return currentAmount - newAmount;
     }
 
+    public boolean hasEnough(ResourceType type, int amount){
+        return (resources.get(type) >= amount);
+    }
+
     public void setVisible(boolean visible) {
         this.isVisible = visible;
         if (visible) this.Explored = true;

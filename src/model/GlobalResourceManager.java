@@ -6,10 +6,12 @@ import java.util.Map;
 public class GlobalResourceManager {
     private final Map<ResourceType, Integer> resources;
     private final Map<ResourceType, Integer> resourcesCapacity;
+    private final Map<ResourceType, Integer> resourceNetChanges;
 
     public GlobalResourceManager() {
         this.resources = new HashMap<>();
         this.resourcesCapacity = new HashMap<>();
+        this.resourceNetChanges = new HashMap<>();
 
         updateStorage(50, 50, 100, 90, 80);
 
@@ -88,5 +90,22 @@ public class GlobalResourceManager {
         resourcesCapacity.put(ResourceType.WOOD, wood);
         resourcesCapacity.put(ResourceType.STONE, stone);
         resourcesCapacity.put(ResourceType.IRON, iron);
+    }
+
+    public void addNetChanges(ResourceType type, int netChange){
+        int current = resourceNetChanges.getOrDefault(type, 0);
+        resourceNetChanges.put(type, current + netChange);
+    }
+
+    public int getNetChanges(ResourceType type){
+        return resourceNetChanges.getOrDefault(type, 0);
+    }
+
+    public void resetNetChanges() {
+        for (ResourceType type : ResourceType.values()) {
+            if (type != ResourceType.NONE) {
+                resourceNetChanges.put(type, 0);
+            }
+        }
     }
 }

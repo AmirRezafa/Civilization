@@ -1,6 +1,7 @@
 package controller;
 
 import model.*;
+import view.GameControlPanel;
 import view.Ground;
 import view.UnitActionPanel;
 
@@ -177,6 +178,10 @@ public class GameController {
             return;
         }
 
+        economy.spendResource(ResourceType.WOOD, type.getWoodCost() / 10);
+        economy.spendResource(ResourceType.STONE, type.getStoneCost() / 10);
+        economy.spendResource(ResourceType.IRON, type.getIronCost() / 10);
+
         if (!building.isOccupied() || type == BuildingType.SETTLEMENT) return;
 
         ResourceType targetResource = type.getOutputResource();
@@ -266,6 +271,10 @@ public class GameController {
 
     public void addUnit(Unit unit){
         units.add(unit);
+    }
+
+    public void deleteUnit(Unit unit){
+        units.remove(unit);
     }
 
     public Unit getSelectedUnit() {
@@ -372,24 +381,26 @@ public class GameController {
         if(bType == BuildingType.SETTLEMENT) unitCapacity += 3;
 
         selectedUnit.useCharge();
-        System.out.println(selectedUnit.getCharge() + " hoyyyyy");
         if(selectedUnit.getCharge() == 0){
-            units.remove(selectedUnit);
+            deleteUnit(selectedUnit);
             selectedUnit = null;
         }
 
         Building building = new Building(bType);
         buildings.add(building);
+
         tileUnderUnit.setBuilding(building);
+        GameControlPanel.getInstance().updateHUD();
         return true;
     }
 
     public void assignWorkerToBuilding() {
-
         tileUnderUnit.getBuilding().addWorker(selectedUnit);
         selectedUnit.setAssigned(true);
+
         selectedUnit = null;
         tileUnderUnit = null;
+        GameControlPanel.getInstance().updateHUD();
     }
 
     public void removeWorker() {
@@ -419,6 +430,7 @@ public class GameController {
         }
         int cost = uType.getFoodCost();
         boolean isPaid = economy.spendFood(cost);
+        GameControlPanel.getInstance().updateHUD();
 
         if(isPaid){
             Townhall.getBuilding().startProducing(uType);
@@ -439,7 +451,7 @@ public class GameController {
             }
         }
 
-        units.remove(selectedUnit);
+        deleteUnit(selectedUnit);
         selectedUnit = null;
     }
 
@@ -458,6 +470,7 @@ public class GameController {
             economy.spendResource(ResourceType.STONE, 100);
             economy.updateStorage(400, 400, 600, 500, 400);
         }
+        GameControlPanel.getInstance().updateHUD();
     }
 
     // "is" ha ro "has" kardam ke tamiz tar beshe yeho nagid ai e :((
@@ -481,21 +494,53 @@ public class GameController {
     public void researchStoneTech() {
         economy.spendResource(ResourceType.WOOD, 50);
         stoneTech = true;
+        GameControlPanel.getInstance().updateHUD();
     }
 
     public void researchIronTech() {
         economy.spendResource(ResourceType.STONE, 100);
         stoneTech = true;
+        GameControlPanel.getInstance().updateHUD();
     }
 
     public void researchSettlementTech() {
         economy.spendResource(ResourceType.WOOD, 150);
         stoneTech = true;
+        GameControlPanel.getInstance().updateHUD();
     }
 
     public void researchProToolsTech() {
         economy.spendResource(ResourceType.IRON, 100);
         proToolsTech = true;
+        GameControlPanel.getInstance().updateHUD();
+    }
+
+
+    public void updateNetChanges(){
+        economy.resetNetChanges();
+
+        economy.addNetChanges(ResourceType.WHEAT, 1);
+        economy.addNetChanges(ResourceType.WOOD, 1);
+
+        economy.addNetChanges(ResourceType.WHEAT, -1 * FOOD_REQUIREMENT * units.size());
+
+
+        int wood = 0, stone = 0, iron = 0;
+        for(Building building: buildings){
+            wood -= building.getType().getWoodCost() / 10;
+            stone -= building.getType().getStoneCost() / 10;
+            iron -= building.getType().getIronCost() / 10;
+
+            ResourceType source = building.getType().getOutputResource();
+            if(source != null && source != ResourceType.NONE){
+                economy.addNetChanges(source, (int)((proToolsTech ? 1.5 : 1) *
+                        BASE_PRODUCTION_RATE) * building.getStationedWorkers().size());
+            }
+        }
+        economy.addNetChanges(ResourceType.WOOD, wood);
+        economy.addNetChanges(ResourceType.STONE, stone);
+        economy.addNetChanges(ResourceType.IRON, iron);
+
     }
 
 }

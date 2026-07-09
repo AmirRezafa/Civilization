@@ -18,15 +18,22 @@ public class GameControlPanel extends JPanel {
     private JLabel ironLabel;
     private JButton nextTurnButton;
 
+    private static GameControlPanel instance;
+
 
     public GameControlPanel() {
         this.GC = GameController.getInstance();
+        instance = this;
 
         this.setLayout(new FlowLayout(FlowLayout.CENTER, 25, 12));
         this.setBackground(new Color(45, 45, 45));
 
         initializeComponents();
         updateHUD();
+    }
+
+    public static GameControlPanel getInstance() {
+        return instance;
     }
 
     private JLabel createLabel(Font hudFont, Color textColor){
@@ -82,16 +89,21 @@ public class GameControlPanel extends JPanel {
 
     public void updateHUD() {
         var economy = GC.getEconomy();
-
-        foodLabel.setText("Food: " + (economy.getResourceAmount(ResourceType.CATTLE) +
+        GC.updateNetChanges();
+        foodLabel.setText("Food: " + (economy.getNetChanges(ResourceType.CATTLE) +
+                economy.getNetChanges(ResourceType.WHEAT)) + " | " +
+                (economy.getResourceAmount(ResourceType.CATTLE) +
                 economy.getResourceAmount(ResourceType.WHEAT)) + "/" +
                 (economy.getResourceCapacityAmount(ResourceType.CATTLE) +
                         economy.getResourceCapacityAmount(ResourceType.WHEAT)));
-        woodLabel.setText("Wood: " + economy.getResourceAmount(ResourceType.WOOD) + "/" +
+        woodLabel.setText("Wood: " + economy.getNetChanges(ResourceType.WOOD) + " | " +
+                economy.getResourceAmount(ResourceType.WOOD) + "/" +
                 economy.getResourceCapacityAmount(ResourceType.WOOD));
-        stoneLabel.setText("Stone: " + economy.getResourceAmount(ResourceType.STONE) + "/" +
+        stoneLabel.setText("Stone: " + economy.getNetChanges(ResourceType.STONE) + " | " +
+                economy.getResourceAmount(ResourceType.STONE) + "/" +
                 economy.getResourceCapacityAmount(ResourceType.STONE));
-        ironLabel.setText("Iron: " + economy.getResourceAmount(ResourceType.IRON) + "/" +
+        ironLabel.setText("Iron: " + economy.getNetChanges(ResourceType.IRON) + " | " +
+                economy.getResourceAmount(ResourceType.IRON) + "/" +
                 economy.getResourceCapacityAmount(ResourceType.IRON));
     }
 }
