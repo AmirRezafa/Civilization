@@ -4,55 +4,20 @@ import java.util.ArrayList;
 
 public class Building {
     private final BuildingType type;
-    private final int col;
-    private final int row;
     private boolean isOccupied;
-    private static final int BASE_PRODUCTION_RATE = 2;
     private ArrayList<Unit> workers;
 
     private UnitType producingUnit = null;
     private int productionTurnsLeft = 0;
 
-    public Building(BuildingType type, int col, int row) {
+    public Building(BuildingType type) {
         this.type = type;
-        this.col = col;
-        this.row = row;
         this.isOccupied = false;
         workers = new ArrayList<>();
     }
 
-    public void processTurnProduction(Tile tile, GlobalResourceManager economy) {
-        if (type == BuildingType.TOWN_HALL) {
-            economy.addResource(ResourceType.WHEAT, 1);
-            economy.addResource(ResourceType.WOOD, 1);
-            return;
-        }
-
-        if (!isOccupied || type == BuildingType.SETTLEMENT) return;
-
-        ResourceType targetResource = type.getOutputResource();
-        System.out.println(targetResource);
-
-        if (targetResource != null && targetResource != ResourceType.NONE) {
-            if (tile.hasResource(targetResource)) {
-                System.out.println(targetResource);
-                System.out.println(workers.size());
-                economy.addResource(targetResource,
-                        tile.extractResource(targetResource, BASE_PRODUCTION_RATE * workers.size()));
-            }
-        }
-    }
-
     public BuildingType getType() {
         return type;
-    }
-
-    public int getCol() {
-        return col;
-    }
-
-    public int getRow() {
-        return row;
     }
 
     public boolean isOccupied() {

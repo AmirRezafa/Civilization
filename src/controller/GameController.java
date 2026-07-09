@@ -13,6 +13,8 @@ import java.util.*;
 public class GameController {
     private final static int BUILD_COST = 2;
     private final static int FOOD_REQUIREMENT = 1;
+    private static final int BASE_PRODUCTION_RATE = 2;
+
     private static GameController instance;
     private AnimationController animationController;
     private Ground ground;
@@ -35,7 +37,7 @@ public class GameController {
 
     private int TownhallX = 10, TownhallY = 10;
 
-    private int unitCapacity = 5;
+    private int unitCapacity = 9;
 
     public GameController(Ground ground) {
         instance = this;
@@ -149,7 +151,7 @@ public class GameController {
         }
         this.Tiles = tempTiles;
 
-        Townhall.setBuilding(new Building(BuildingType.TOWN_HALL, TownhallX, TownhallY));
+        Townhall.setBuilding(new Building(BuildingType.TOWN_HALL));
         addUnit(new Unit(UnitType.BUILDER, TownhallX, TownhallY + 1));
         addUnit(new Unit(UnitType.BUILDER, TownhallX + 1, TownhallY));
         addUnit(new Unit(UnitType.WORKER, TownhallX - 1, TownhallY + 1));
@@ -161,12 +163,33 @@ public class GameController {
 
     }
 
+    public void processTurnProduction(Tile tile, GlobalResourceManager economy) {
+        Building building = tile.getBuilding();
+        BuildingType type = building.getType();
+        if (type == BuildingType.TOWN_HALL) {
+            economy.addResource(ResourceType.WHEAT, 1);
+            economy.addResource(ResourceType.WOOD, 1);
+            return;
+        }
+
+        if (!building.isOccupied() || type == BuildingType.SETTLEMENT) return;
+
+        ResourceType targetResource = type.getOutputResource();
+
+        if (targetResource != null && targetResource != ResourceType.NONE) {
+            if (tile.hasResource(targetResource)) {
+                economy.addResource(targetResource,
+                        tile.extractResource(targetResource, BASE_PRODUCTION_RATE * building.getStationedWorkers().size()));
+            }
+        }
+    }
+
     public void advanceTurn(){
         currentTurn++;
         for(Tile tile: Tiles){
             Building building = tile.getBuilding();
             if(building != null){
-                building.processTurnProduction(tile, this.economy);
+                processTurnProduction(tile, this.economy);
             }
         }
 
@@ -348,7 +371,7 @@ public class GameController {
             selectedUnit = null;
         }
 
-        Building building = new Building(bType, tileUnderUnit.getCol(), tileUnderUnit.getRow());
+        Building building = new Building(bType);
         buildings.add(building);
         tileUnderUnit.setBuilding(building);
         return true;

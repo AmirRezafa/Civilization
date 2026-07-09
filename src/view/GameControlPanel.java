@@ -84,9 +84,14 @@ public class GameControlPanel extends JPanel {
         var economy = GC.getEconomy();
 
         foodLabel.setText("Food: " + (economy.getResourceAmount(ResourceType.CATTLE) +
-                economy.getResourceAmount(ResourceType.WHEAT)));
-        woodLabel.setText("Wood: " + economy.getResourceAmount(ResourceType.WOOD));
-        stoneLabel.setText("Stone: " + economy.getResourceAmount(ResourceType.STONE));
-        ironLabel.setText("Iron: " + economy.getResourceAmount(ResourceType.IRON));
+                economy.getResourceAmount(ResourceType.WHEAT)) + "/" +
+                (economy.getResourceCapacityAmount(ResourceType.CATTLE) +
+                        economy.getResourceCapacityAmount(ResourceType.WHEAT)));
+        woodLabel.setText("Wood: " + economy.getResourceAmount(ResourceType.WOOD) + "/" +
+                economy.getResourceCapacityAmount(ResourceType.WOOD));
+        stoneLabel.setText("Stone: " + economy.getResourceAmount(ResourceType.STONE) + "/" +
+                economy.getResourceCapacityAmount(ResourceType.STONE));
+        ironLabel.setText("Iron: " + economy.getResourceAmount(ResourceType.IRON) + "/" +
+                economy.getResourceCapacityAmount(ResourceType.IRON));
     }
 }
