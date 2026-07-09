@@ -24,6 +24,7 @@ public class Building {
     public void processTurnProduction(Tile tile, GlobalResourceManager economy) {
         if (type == BuildingType.TOWN_HALL) {
             economy.addResource(ResourceType.WHEAT, 1);
+            economy.addResource(ResourceType.WOOD, 1);
             return;
         }
 

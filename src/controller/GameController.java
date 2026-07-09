@@ -327,7 +327,7 @@ public class GameController {
     }
 
     public boolean constructBuilding(BuildingType bType) {
-        if(selectedUnit.getCurrentAP() < BUILD_COST) return false;
+        if(selectedUnit.getCurrentAP() < bType.getApCost()) return false;
         selectedUnit.setCurrentAP(selectedUnit.getCurrentAP() - BUILD_COST);
 
         if(!(economy.hasEnough(ResourceType.WOOD, bType.getWoodCost()) &&
