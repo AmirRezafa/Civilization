@@ -110,7 +110,9 @@ public class UnitActionPanel extends JPanel {
             boolean isTileEmpty = (currentTile.getBuilding() == null);
             boolean inTerritory = currentTile.isOwned();
 
-            if(bType == BuildingType.SETTLEMENT) isValidTerrain = true;
+            if(bType == BuildingType.SETTLEMENT) isValidTerrain = GC.hasSettlementTech();
+            if(bType == BuildingType.STONE_MINE && isValidTerrain) isValidTerrain = GC.hasStoneTech();
+            if(bType == BuildingType.IRON_MINE && isValidTerrain) isValidTerrain = GC.hasIronTech();
 
             buildBtn.setEnabled(isValidTerrain && isTileEmpty && inTerritory);
 

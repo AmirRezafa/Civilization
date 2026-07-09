@@ -184,7 +184,9 @@ public class GameController {
         if (targetResource != null && targetResource != ResourceType.NONE) {
             if (tile.hasResource(targetResource)) {
                 economy.addResource(targetResource,
-                        tile.extractResource(targetResource, BASE_PRODUCTION_RATE * building.getStationedWorkers().size()));
+                        tile.extractResource(targetResource,
+                                (int)((proToolsTech ? 1.5 : 1) * BASE_PRODUCTION_RATE) *
+                                        building.getStationedWorkers().size()));
             }
         }
     }
