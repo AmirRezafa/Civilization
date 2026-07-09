@@ -11,11 +11,7 @@ public class GlobalResourceManager {
         this.resources = new HashMap<>();
         this.resourcesCapacity = new HashMap<>();
 
-        this.resourcesCapacity.put(ResourceType.CATTLE, 50);
-        this.resourcesCapacity.put(ResourceType.WHEAT, 50);
-        this.resourcesCapacity.put(ResourceType.WOOD, 100);
-        this.resourcesCapacity.put(ResourceType.STONE, 90);
-        this.resourcesCapacity.put(ResourceType.IRON, 80);
+        updateStorage(50, 50, 100, 90, 80);
 
         initRegistry();
     }
@@ -84,5 +80,13 @@ public class GlobalResourceManager {
 
     public int getResourceCapacityAmount(ResourceType type) {
         return resourcesCapacity.getOrDefault(type, 0);
+    }
+
+    public void updateStorage(int cattle, int wheat, int wood, int stone, int iron) {
+        resourcesCapacity.put(ResourceType.CATTLE, cattle);
+        resourcesCapacity.put(ResourceType.WHEAT, wheat);
+        resourcesCapacity.put(ResourceType.WOOD, wood);
+        resourcesCapacity.put(ResourceType.STONE, stone);
+        resourcesCapacity.put(ResourceType.IRON, iron);
     }
 }

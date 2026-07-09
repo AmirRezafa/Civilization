@@ -39,6 +39,11 @@ public class GameController {
 
     private int unitCapacity = 9;
 
+    private boolean stoneTech = false;
+    private boolean ironTech = false;
+    private boolean settlementTech = false;
+    private boolean proToolsTech = false;
+
     public GameController(Ground ground) {
         instance = this;
         camera = new Camera();
@@ -395,6 +400,15 @@ public class GameController {
     public boolean hasEnoughFood(int foodCost) {
         return(economy.hasEnoughFood(foodCost));
     }
+    public boolean hasEnoughWood(int woodCost) {
+        return(economy.hasEnough(ResourceType.WOOD, woodCost));
+    }
+    public boolean hasEnoughStone(int stoneCost) {
+        return(economy.hasEnough(ResourceType.STONE, stoneCost));
+    }
+    public boolean hasEnoughIron(int ironCost) {
+        return(economy.hasEnough(ResourceType.IRON, ironCost));
+    }
 
     public void startProducingUnitInTownHall(UnitType uType) {
         if(Townhall.getBuilding().isProducing()){
@@ -426,4 +440,60 @@ public class GameController {
         units.remove(selectedUnit);
         selectedUnit = null;
     }
+
+    public int getStorageLevel() {
+        if(economy.getResourceCapacityAmount(ResourceType.WOOD) == 100) return 0;
+        else if(economy.getResourceCapacityAmount(ResourceType.WOOD) == 250) return 1;
+        else return 2;
+    }
+
+    public void upgradeStorage() {
+        if(getStorageLevel() == 0){
+            economy.spendResource(ResourceType.WOOD, 100);
+            economy.updateStorage(150, 150, 250, 200, 180);
+        }else if(getStorageLevel() == 1){
+            economy.spendResource(ResourceType.WOOD, 200);
+            economy.spendResource(ResourceType.STONE, 100);
+            economy.updateStorage(400, 400, 600, 500, 400);
+        }
+    }
+
+    // "is" ha ro "has" kardam ke tamiz tar beshe yeho nagid ai e :((
+
+    public boolean hasStoneTech() {
+        return stoneTech;
+    }
+
+    public boolean hasIronTech() {
+        return ironTech;
+    }
+
+    public boolean hasSettlementTech() {
+        return settlementTech;
+    }
+
+    public boolean hasProToolsTech() {
+        return proToolsTech;
+    }
+
+    public void researchStoneTech() {
+        economy.spendResource(ResourceType.WOOD, 50);
+        stoneTech = true;
+    }
+
+    public void researchIronTech() {
+        economy.spendResource(ResourceType.STONE, 100);
+        stoneTech = true;
+    }
+
+    public void researchSettlementTech() {
+        economy.spendResource(ResourceType.WOOD, 150);
+        stoneTech = true;
+    }
+
+    public void researchProToolsTech() {
+        economy.spendResource(ResourceType.IRON, 100);
+        proToolsTech = true;
+    }
+
 }

@@ -11,6 +11,14 @@ public class UnitActionPanel extends JPanel {
     private final JPanel buttonContainer;
     private static UnitActionPanel instance;
 
+    private enum SubMenu {
+        MAIN, TRAIN, STORAGE, TECH
+    }
+
+    private SubMenu currentSubMenu = SubMenu.MAIN;
+
+    private int a;
+
     public UnitActionPanel() {
         this.GC = GameController.getInstance();
         setVisible(false);
@@ -44,7 +52,7 @@ public class UnitActionPanel extends JPanel {
         String msg = "Producing: " + building.getProducingUnit().getDisplayName() +
                 " (" + building.getProductionTurnsLeft() + " Turns Left)";
         JLabel producingLabel = new JLabel(msg);
-        producingLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        producingLabel.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
         producingLabel.setForeground(new Color(241, 196, 15));
 
         buttonContainer.add(producingLabel);
@@ -57,7 +65,7 @@ public class UnitActionPanel extends JPanel {
 
             JButton trainBtn = new JButton(btnText);
             trainBtn.setFocusable(false);
-            trainBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+            trainBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
 
             boolean canAfford = GC.hasEnoughFood(uType.getFoodCost()) &&
                     GC.checkUnitCap();
@@ -75,7 +83,7 @@ public class UnitActionPanel extends JPanel {
     private void showUnassignButton(int workerCount){
         JButton unassignBtn = new JButton("Unassign Worker (" + workerCount + ")");
         unassignBtn.setFocusable(false);
-        unassignBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+        unassignBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
         unassignBtn.setBackground(new Color(231, 76, 60));
         unassignBtn.setForeground(Color.WHITE);
 
@@ -93,9 +101,10 @@ public class UnitActionPanel extends JPanel {
                 continue;
             }
 
-            JButton buildBtn = new JButton("Build " + bType.getDisplayName());
+            JButton buildBtn = new JButton("Build " + bType.getDisplayName()
+                    + " (" + bType.getCostString() + ")");
             buildBtn.setFocusable(false);
-            buildBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+            buildBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
 
             boolean isValidTerrain = (currentTile.getTerrain() == bType.getRequiredTerrain());
             boolean isTileEmpty = (currentTile.getBuilding() == null);
@@ -117,7 +126,7 @@ public class UnitActionPanel extends JPanel {
     private void showWorkHereButton(){
         JButton workBtn = new JButton("Work Here");
         workBtn.setFocusable(false);
-        workBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+        workBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
         workBtn.setBackground(new Color(46, 204, 113));
         workBtn.setForeground(Color.WHITE);
 
@@ -134,7 +143,7 @@ public class UnitActionPanel extends JPanel {
         expandBtn.setFocusable(false);
         expandBtn.setBackground(new Color(155, 89, 182));
         expandBtn.setForeground(Color.WHITE);
-        expandBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+        expandBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
 
         expandBtn.addActionListener(e -> {
             GC.expandTerritory();
@@ -144,8 +153,151 @@ public class UnitActionPanel extends JPanel {
         buttonContainer.add(expandBtn);
     }
 
+    private void showStorageUpgradeButtons() {
+        int storageLevel = GC.getStorageLevel();
+        JButton storageBtn = new JButton();
+        storageBtn.setFocusable(false);
+        storageBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
+
+        if (storageLevel == 0) {
+            storageBtn.setText("Upgrade Storage Lvl 1 (100 Wood)");
+            storageBtn.setEnabled(GC.hasEnoughWood(100));
+            storageBtn.addActionListener(e -> {
+                GC.upgradeStorage();
+                updateActions();
+            });
+            buttonContainer.add(storageBtn);
+        } else if (storageLevel == 1) {
+            storageBtn.setText("Upgrade Storage Lvl 2 (200 Wood, 100 Stone)");
+            storageBtn.setEnabled(GC.hasEnoughWood(200) && GC.hasEnoughStone(100));
+            storageBtn.addActionListener(e -> {
+                GC.upgradeStorage();
+                updateActions();
+            });
+            buttonContainer.add(storageBtn);
+        } else {
+            storageBtn.setText("Storage Maxed Out (Lvl 2)");
+            storageBtn.setEnabled(false);
+            buttonContainer.add(storageBtn);
+        }
+    }
+
+    private void showResearchButtons() {
+        JButton stoneTechBtn = new JButton("Stone Mining Tech (50 Wood)");
+        stoneTechBtn.setFocusable(false);
+        stoneTechBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
+
+        if (GC.hasStoneTech()) {
+            stoneTechBtn.setText("Stone Mining ✅");
+            stoneTechBtn.setEnabled(false);
+        } else {
+            stoneTechBtn.setEnabled(GC.hasEnoughWood(50));
+            stoneTechBtn.addActionListener(e -> {
+                GC.researchStoneTech();
+                updateActions();
+            });
+        }
+        buttonContainer.add(stoneTechBtn);
+
+        JButton ironTechBtn = new JButton("Iron Mining Tech (100 Stone)");
+        ironTechBtn.setFocusable(false);
+        ironTechBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
+
+        if (GC.hasIronTech()) {
+            ironTechBtn.setText("Iron Mining ✅");
+            ironTechBtn.setEnabled(false);
+        } else {
+            ironTechBtn.setEnabled(GC.hasEnoughStone(100));
+            ironTechBtn.addActionListener(e -> {
+                GC.researchIronTech();
+                updateActions();
+            });
+        }
+        buttonContainer.add(ironTechBtn);
+
+        JButton settlementTechBtn = new JButton("Settlement Tech (150 Wood)");
+        settlementTechBtn.setFocusable(false);
+        settlementTechBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
+
+        if (GC.hasSettlementTech()) {
+            settlementTechBtn.setText("Settlement ✅");
+            settlementTechBtn.setEnabled(false);
+        } else {
+            settlementTechBtn.setEnabled(GC.hasEnoughWood(150));
+            settlementTechBtn.addActionListener(e -> {
+                GC.researchSettlementTech();
+                updateActions();
+            });
+        }
+        buttonContainer.add(settlementTechBtn);
+
+        JButton toolsTechBtn = new JButton("Pro Tools Tech (100 Iron)");
+        toolsTechBtn.setFocusable(false);
+        toolsTechBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
+
+        if (GC.hasProToolsTech()) {
+            toolsTechBtn.setText("Pro Tools (1.5x) ✅");
+            toolsTechBtn.setEnabled(false);
+        } else {
+            toolsTechBtn.setEnabled(GC.hasEnoughIron(100));
+            toolsTechBtn.addActionListener(e -> {
+                GC.researchProToolsTech();
+                updateActions();
+            });
+        }
+        buttonContainer.add(toolsTechBtn);
+    }
+
+    private void showTownHallMainMenu() {
+        JButton trainMenuBtn = new JButton("Train Units");
+        trainMenuBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
+        trainMenuBtn.setFocusable(false);
+        trainMenuBtn.addActionListener(e -> {
+            currentSubMenu = SubMenu.TRAIN;
+            updateActions();
+        });
+
+        JButton storageMenuBtn = new JButton("Storage Upgrades");
+        storageMenuBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
+        storageMenuBtn.setFocusable(false);
+        storageMenuBtn.addActionListener(e -> {
+            currentSubMenu = SubMenu.STORAGE;
+            updateActions();
+        });
+
+        JButton techMenuBtn = new JButton("Research Tech");
+        techMenuBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
+        techMenuBtn.setFocusable(false);
+        techMenuBtn.addActionListener(e -> {
+            currentSubMenu = SubMenu.TECH;
+            updateActions();
+        });
+
+        buttonContainer.add(trainMenuBtn);
+        buttonContainer.add(storageMenuBtn);
+        buttonContainer.add(techMenuBtn);
+    }
+
+    private void showBackButton() {
+        JButton backBtn = new JButton("Back");
+        backBtn.setFont(new Font("SansSerif", Font.BOLD, (int) (a * 0.4)));
+        backBtn.setFocusable(false);
+        backBtn.setBackground(new Color(149, 165, 166));
+        backBtn.setForeground(Color.WHITE);
+        backBtn.addActionListener(e -> {
+            currentSubMenu = SubMenu.MAIN;
+            updateActions();
+        });
+        buttonContainer.add(backBtn);
+    }
+
     public void updateActions() {
         buttonContainer.removeAll();
+
+        a = GC.getA();
+        int hGap = (int) (a * 0.6);
+        int vGap = (int) (a * 0.8);
+        buttonContainer.setLayout(new FlowLayout(FlowLayout.LEFT, hGap, vGap));
 
         Unit selectedUnit = GC.getSelectedUnit();
         Tile currentTile = GC.getTileUnderUnit();
@@ -161,7 +313,17 @@ public class UnitActionPanel extends JPanel {
                 if (building.isProducing()) {
                     showProducingMSG(building);
                 } else {
-                    showProduceButtons();
+                    switch (currentSubMenu) {
+                        case MAIN -> showTownHallMainMenu();
+                        default -> {
+                            showBackButton();
+                            switch (currentSubMenu) {
+                                case TRAIN -> showProduceButtons();
+                                case STORAGE -> showStorageUpgradeButtons();
+                                case TECH -> showResearchButtons();
+                            }
+                        }
+                    }
                 }
                 setVisible(true);
             return;

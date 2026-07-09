@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public enum BuildingType {
     LUMBER_MILL("Lumber Mill", TerrainType.FOREST, ResourceType.WOOD
             , 0, 0, 0, 2, 1),
@@ -69,5 +71,17 @@ public enum BuildingType {
 
     public int getApCost() {
         return apCost;
+    }
+
+    public String getCostString() {
+        ArrayList<String> costs = new ArrayList<>();
+
+        if (woodCost > 0) costs.add(woodCost + " Wood");
+        if (stoneCost > 0) costs.add(stoneCost + " Stone");
+        if (ironCost > 0) costs.add(ironCost + " Iron");
+
+        if (costs.isEmpty()) return "Free";
+
+        return String.join(", ", costs);
     }
 }
